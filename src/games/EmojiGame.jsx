@@ -7,6 +7,7 @@ export default function EmojiGame({ game, room, me, send }) {
   if (!game) return null;
 
   const isStoryteller = me.id === game.storytellerId;
+  const isHost = room?.hostId === me.id;
   const storytellerName = room?.players.find((p) => p.id === game.storytellerId)?.name || "Someone";
   const roundWinnerName = game.roundWinnerId
     ? room?.players.find((p) => p.id === game.roundWinnerId)?.name
@@ -25,13 +26,14 @@ export default function EmojiGame({ game, room, me, send }) {
   };
 
   const playerName = (id) => room?.players.find((p) => p.id === id)?.name || "?";
+  const canSkip = isHost && (game.status === "composing" || game.status === "guessing");
 
   return (
     <main className="game-stage">
       <div className="game-header">
         <span>Emoji Storytelling</span>
         <span>Round {game.round}</span>
-        <span className="voting-timer">{game.timer}s</span>
+        {game.timer != null && <span className="voting-timer">{game.timer}s</span>}
       </div>
 
       {game.status === "composing" && isStoryteller && (
@@ -97,6 +99,14 @@ export default function EmojiGame({ game, room, me, send }) {
           {roundWinnerName && (
             <div className="status round-winner">Round winner: {roundWinnerName}</div>
           )}
+        </div>
+      )}
+
+      {canSkip && (
+        <div className="actions">
+          <button type="button" className="skip-btn" onClick={() => send({ type: "skipPhase" })}>
+            Skip
+          </button>
         </div>
       )}
 

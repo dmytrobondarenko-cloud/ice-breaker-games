@@ -1,5 +1,3 @@
-const SUBMIT_DURATION = 60;
-const VOTE_DURATION = 30;
 const REVEAL_DURATION = 8;
 
 export function createTruthsState({ players }) {
@@ -17,7 +15,6 @@ export function createTruthsState({ players }) {
     votes: new Map(),
     scores,
     round: 1,
-    timer: SUBMIT_DURATION,
     roundWinnerId: null,
   };
 }
@@ -48,7 +45,6 @@ function submitStatements(state, playerId, statements, lieIndex) {
     statements: cleaned,
     lieIndex,
     votes: new Map(),
-    timer: VOTE_DURATION,
   };
 }
 
@@ -105,13 +101,13 @@ export function nextTruthsRound(state) {
     lieIndex: null,
     votes: new Map(),
     round: state.round + 1,
-    timer: SUBMIT_DURATION,
+    timer: null,
     roundWinnerId: null,
   };
 }
 
 export function tickTruths(state) {
-  if (state.timer <= 0) return state;
+  if (state.timer == null || state.timer <= 0) return state;
   return { ...state, timer: state.timer - 1 };
 }
 

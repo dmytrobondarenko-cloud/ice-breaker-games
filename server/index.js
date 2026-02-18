@@ -6,8 +6,8 @@ import { WebSocketServer } from "ws";
 import { createGameState, setSnakeDirection, stepGame } from "./engine.js";
 import { createVotingState, submitVote, tickVoting, allVotesIn, resolveVoting, serializeVoting } from "./voting-engine.js";
 import { createTruthsState, handleTruthsAction, allTruthsVotesIn, revealTruths, nextTruthsRound, tickTruths, serializeTruths } from "./truths-engine.js";
-import { createEmojiState, handleEmojiAction, tickEmoji, revealEmoji, nextEmojiRound, serializeEmoji } from "./emoji-engine.js";
-import { createSketchState, handleSketchAction, tickSketch, revealSketch, nextSketchRound, serializeSketch } from "./sketch-engine.js";
+import { createEmojiState, handleEmojiAction, allEmojiGuessersCorrect, tickEmoji, revealEmoji, nextEmojiRound, serializeEmoji } from "./emoji-engine.js";
+import { createSketchState, handleSketchAction, allSketchGuessersCorrect, tickSketch, revealSketch, nextSketchRound, serializeSketch } from "./sketch-engine.js";
 import { createTriviaState, handleTriviaAction, allAnswered, revealTrivia, nextTriviaQuestion, nextTriviaRound, tickTrivia, serializeTrivia } from "./trivia-engine.js";
 
 const PORT = Number(process.env.PORT || process.env.SNAKE_WS_PORT || 3000);
@@ -86,6 +86,7 @@ function handleMessage(ws, clientId, message) {
     case "start":      handleStart(clientId); break;
     case "restart":    handleRestart(clientId); break;
     case "endGame":    handleEndGame(clientId); break;
+    case "skipPhase":  handleSkipPhase(clientId); break;
     case "input":      handleInput(clientId, message.dir); break;
     case "vote":       handleVote(clientId, message.game); break;
     case "gameAction": handleGameAction(ws, clientId, message.action); break;
@@ -143,7 +144,6 @@ function handleStart(clientId) {
   startVoting(room);
 }
 
-// Host clicks "Next Round" (snake only — other games auto-advance rounds)
 function handleRestart(clientId) {
   const room = findRoomByPlayer(clientId);
   if (!room || room.hostId !== clientId) return;
@@ -154,7 +154,6 @@ function handleRestart(clientId) {
   }
 }
 
-// Host clicks "End Game" — awards game win, returns to voting
 function handleEndGame(clientId) {
   const room = findRoomByPlayer(clientId);
   if (!room || room.hostId !== clientId) return;
@@ -175,6 +174,37 @@ function handleEndGame(clientId) {
 
   room.roundWins = new Map();
   startVoting(room);
+}
+
+// Host skips the current phase (for games without timers)
+function handleSkipPhase(clientId) {
+  const room = findRoomByPlayer(clientId);
+  if (!room || room.hostId !== clientId) return;
+  if (room.status !== "playing") return;
+
+  switch (room.currentGame) {
+    case "truths":
+      if (room.game.status === "submitting") {
+        room.game = nextTruthsRound(room.game);
+        broadcastGameState(room);
+      } else if (room.game.status === "voting") {
+        triggerTruthsReveal(room);
+      }
+      break;
+    case "emoji":
+      if (room.game.status === "composing") {
+        room.game = nextEmojiRound(room.game, Math.random);
+        broadcastGameState(room);
+      } else if (room.game.status === "guessing") {
+        triggerEmojiReveal(room);
+      }
+      break;
+    case "sketch":
+      if (room.game.status === "drawing") {
+        triggerSketchReveal(room);
+      }
+      break;
+  }
 }
 
 function handleDisconnect(clientId) {
@@ -246,10 +276,7 @@ function startVoting(room) {
   room.interval = setInterval(() => {
     room.votingState = tickVoting(room.votingState);
     broadcastVotingState(room);
-
-    if (room.votingState.timer <= 0) {
-      finishVoting(room);
-    }
+    if (room.votingState.timer <= 0) finishVoting(room);
   }, 1000);
 }
 
@@ -287,16 +314,27 @@ function handleGameAction(ws, clientId, action) {
   switch (room.currentGame) {
     case "truths":
       room.game = handleTruthsAction(room.game, clientId, action);
-      handleTruthsTimerLogic(room);
-      broadcastGameState(room);
+      if (room.game.status === "voting" && allTruthsVotesIn(room.game)) {
+        triggerTruthsReveal(room);
+      } else {
+        broadcastGameState(room);
+      }
       break;
     case "emoji":
       room.game = handleEmojiAction(room.game, clientId, action);
-      broadcastGameState(room);
+      if (room.game.status === "guessing" && allEmojiGuessersCorrect(room.game)) {
+        triggerEmojiReveal(room);
+      } else {
+        broadcastGameState(room);
+      }
       break;
     case "sketch":
       room.game = handleSketchAction(room.game, clientId, action);
-      broadcastGameState(room);
+      if (room.game.status === "drawing" && allSketchGuessersCorrect(room.game)) {
+        triggerSketchReveal(room);
+      } else {
+        broadcastGameState(room);
+      }
       break;
     case "trivia":
       room.game = handleTriviaAction(room.game, clientId, action);
@@ -337,11 +375,8 @@ function serializeSnake(game) {
   if (!game) return null;
   return {
     gameType: "snake",
-    rows: game.rows,
-    cols: game.cols,
-    food: game.food,
-    status: game.status,
-    winnerId: game.winnerId,
+    rows: game.rows, cols: game.cols, food: game.food,
+    status: game.status, winnerId: game.winnerId,
     snakes: Array.from(game.snakes.values()).map((snake) => ({
       id: snake.id, name: snake.name, color: snake.color,
       alive: snake.alive, score: snake.score, body: snake.body,
@@ -350,55 +385,19 @@ function serializeSnake(game) {
 }
 
 // ── Two Truths & a Lie ───────────────────────────────────────────
+// No interval during submitting/voting — phases advance on player action or host skip.
+// Only the reveal phase uses a timed interval.
 
 function startTruths(room, players) {
   room.game = createTruthsState({ players });
   broadcastGameState(room);
-
-  room.interval = setInterval(() => {
-    room.game = tickTruths(room.game);
-    broadcastGameState(room);
-    if (room.game.timer <= 0) {
-      handleTruthsTimerEnd(room);
-    }
-  }, 1000);
 }
 
-function handleTruthsTimerLogic(room) {
-  if (room.game.status === "voting" && allTruthsVotesIn(room.game)) {
-    stopLoop(room);
-    room.game = revealTruths(room.game);
-    broadcastGameState(room);
-    startTruthsRevealTimer(room);
-  }
-}
-
-function handleTruthsTimerEnd(room) {
+function triggerTruthsReveal(room) {
   stopLoop(room);
-
-  if (room.game.status === "submitting") {
-    room.game = nextTruthsRound(room.game);
-    broadcastGameState(room);
-    startTruthsTick(room);
-  } else if (room.game.status === "voting") {
-    room.game = revealTruths(room.game);
-    broadcastGameState(room);
-    startTruthsRevealTimer(room);
-  } else if (room.game.status === "reveal") {
-    awardRoundWin(room, room.game.roundWinnerId);
-    room.game = nextTruthsRound(room.game);
-    broadcastGameState(room);
-    startTruthsTick(room);
-  }
-}
-
-function startTruthsTick(room) {
-  stopLoop(room);
-  room.interval = setInterval(() => {
-    room.game = tickTruths(room.game);
-    broadcastGameState(room);
-    if (room.game.timer <= 0) handleTruthsTimerEnd(room);
-  }, 1000);
+  room.game = revealTruths(room.game);
+  broadcastGameState(room);
+  startTruthsRevealTimer(room);
 }
 
 function startTruthsRevealTimer(room) {
@@ -406,89 +405,75 @@ function startTruthsRevealTimer(room) {
   room.interval = setInterval(() => {
     room.game = tickTruths(room.game);
     broadcastGameState(room);
-    if (room.game.timer <= 0) handleTruthsTimerEnd(room);
+    if (room.game.timer <= 0) {
+      stopLoop(room);
+      awardRoundWin(room, room.game.roundWinnerId);
+      room.game = nextTruthsRound(room.game);
+      broadcastGameState(room);
+    }
   }, 1000);
 }
 
 // ── Emoji Storytelling ───────────────────────────────────────────
+// No interval during composing/guessing. Only reveal uses a timer.
 
 function startEmojiGame(room, players) {
   room.game = createEmojiState({ players, rng: Math.random });
   broadcastGameState(room);
-
-  room.interval = setInterval(() => {
-    room.game = tickEmoji(room.game);
-    broadcastGameState(room);
-    if (room.game.timer <= 0) handleEmojiTimerEnd(room);
-  }, 1000);
 }
 
-function handleEmojiTimerEnd(room) {
+function triggerEmojiReveal(room) {
   stopLoop(room);
-
-  if (room.game.status === "composing") {
-    room.game = nextEmojiRound(room.game, Math.random);
-    broadcastGameState(room);
-    startEmojiTick(room);
-  } else if (room.game.status === "guessing") {
-    room.game = revealEmoji(room.game);
-    broadcastGameState(room);
-    startEmojiTick(room);
-  } else if (room.game.status === "reveal") {
-    awardRoundWin(room, room.game.roundWinnerId);
-    room.game = nextEmojiRound(room.game, Math.random);
-    broadcastGameState(room);
-    startEmojiTick(room);
-  }
+  room.game = revealEmoji(room.game);
+  broadcastGameState(room);
+  startEmojiRevealTimer(room);
 }
 
-function startEmojiTick(room) {
+function startEmojiRevealTimer(room) {
   stopLoop(room);
   room.interval = setInterval(() => {
     room.game = tickEmoji(room.game);
     broadcastGameState(room);
-    if (room.game.timer <= 0) handleEmojiTimerEnd(room);
+    if (room.game.timer <= 0) {
+      stopLoop(room);
+      awardRoundWin(room, room.game.roundWinnerId);
+      room.game = nextEmojiRound(room.game, Math.random);
+      broadcastGameState(room);
+    }
   }, 1000);
 }
 
 // ── Sketch & Guess ───────────────────────────────────────────────
+// No interval during drawing. Only reveal uses a timer.
 
 function startSketchGame(room, players) {
   room.game = createSketchState({ players, rng: Math.random });
   broadcastGameState(room);
-
-  room.interval = setInterval(() => {
-    room.game = tickSketch(room.game);
-    broadcastGameState(room);
-    if (room.game.timer <= 0) handleSketchTimerEnd(room);
-  }, 1000);
 }
 
-function handleSketchTimerEnd(room) {
+function triggerSketchReveal(room) {
   stopLoop(room);
-
-  if (room.game.status === "drawing") {
-    room.game = revealSketch(room.game);
-    broadcastGameState(room);
-    startSketchTick(room);
-  } else if (room.game.status === "reveal") {
-    awardRoundWin(room, room.game.roundWinnerId);
-    room.game = nextSketchRound(room.game);
-    broadcastGameState(room);
-    startSketchTick(room);
-  }
+  room.game = revealSketch(room.game);
+  broadcastGameState(room);
+  startSketchRevealTimer(room);
 }
 
-function startSketchTick(room) {
+function startSketchRevealTimer(room) {
   stopLoop(room);
   room.interval = setInterval(() => {
     room.game = tickSketch(room.game);
     broadcastGameState(room);
-    if (room.game.timer <= 0) handleSketchTimerEnd(room);
+    if (room.game.timer <= 0) {
+      stopLoop(room);
+      awardRoundWin(room, room.game.roundWinnerId);
+      room.game = nextSketchRound(room.game);
+      broadcastGameState(room);
+    }
   }, 1000);
 }
 
 // ── Speed Trivia ─────────────────────────────────────────────────
+// Trivia keeps its per-question timer (speed is the core mechanic).
 
 function startTriviaGame(room, players) {
   room.game = createTriviaState({ players, rng: Math.random });

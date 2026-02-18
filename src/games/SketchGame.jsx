@@ -13,6 +13,7 @@ export default function SketchGame({ game, room, me, send }) {
   const [guessInput, setGuessInput] = useState("");
 
   const isDrawer = me.id === game?.drawerId;
+  const isHost = room?.hostId === me.id;
   const drawerName = room?.players.find((p) => p.id === game?.drawerId)?.name || "Someone";
   const roundWinnerName = game?.roundWinnerId
     ? room?.players.find((p) => p.id === game.roundWinnerId)?.name
@@ -114,6 +115,7 @@ export default function SketchGame({ game, room, me, send }) {
   };
 
   const playerName = (id) => room?.players.find((p) => p.id === id)?.name || "?";
+  const canSkip = isHost && game?.status === "drawing";
 
   if (!game) return null;
 
@@ -122,7 +124,7 @@ export default function SketchGame({ game, room, me, send }) {
       <div className="game-header">
         <span>Sketch & Guess</span>
         <span>Round {game.round}</span>
-        <span className="voting-timer">{game.timer}s</span>
+        {game.timer != null && <span className="voting-timer">{game.timer}s</span>}
       </div>
 
       <div className="sketch-layout">
@@ -166,6 +168,14 @@ export default function SketchGame({ game, room, me, send }) {
                 />
               ))}
               <button type="button" onClick={handleClear}>Clear</button>
+            </div>
+          )}
+
+          {canSkip && (
+            <div className="actions">
+              <button type="button" className="skip-btn" onClick={() => send({ type: "skipPhase" })}>
+                Skip
+              </button>
             </div>
           )}
         </div>

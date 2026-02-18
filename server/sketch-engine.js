@@ -1,4 +1,3 @@
-const DRAW_DURATION = 60;
 const REVEAL_DURATION = 6;
 
 const WORDS = [
@@ -28,7 +27,7 @@ export function createSketchState({ players, rng }) {
     correctGuessers: [],
     scores,
     round: 1,
-    timer: DRAW_DURATION,
+    timer: null,
     wordPool: shuffled,
     roundWinnerId: null,
   };
@@ -88,8 +87,13 @@ function submitSketchGuess(state, playerId, text) {
   return { ...state, guesses, correctGuessers, scores };
 }
 
+export function allSketchGuessersCorrect(state) {
+  const guessers = state.playerIds.filter((id) => id !== state.drawerId);
+  return guessers.length > 0 && guessers.every((id) => state.correctGuessers.includes(id));
+}
+
 export function tickSketch(state) {
-  if (state.timer <= 0) return state;
+  if (state.timer == null || state.timer <= 0) return state;
   return { ...state, timer: state.timer - 1 };
 }
 
@@ -111,7 +115,7 @@ export function nextSketchRound(state) {
     guesses: [],
     correctGuessers: [],
     round: state.round + 1,
-    timer: DRAW_DURATION,
+    timer: null,
     roundWinnerId: null,
   };
 }

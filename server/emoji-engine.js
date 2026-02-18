@@ -1,5 +1,3 @@
-const COMPOSE_DURATION = 45;
-const GUESS_DURATION = 45;
 const REVEAL_DURATION = 6;
 
 const PROMPTS = [
@@ -53,7 +51,7 @@ export function createEmojiState({ players, rng }) {
     correctGuessers: [],
     scores,
     round: 1,
-    timer: COMPOSE_DURATION,
+    timer: null,
     promptPool: shuffled,
     promptIndex: 0,
     roundWinnerId: null,
@@ -84,7 +82,6 @@ function submitEmojis(state, playerId, emojis) {
     emojis: cleaned,
     guesses: [],
     correctGuessers: [],
-    timer: GUESS_DURATION,
   };
 }
 
@@ -115,8 +112,13 @@ function submitEmojiGuess(state, playerId, text) {
   return { ...state, guesses, correctGuessers, scores };
 }
 
+export function allEmojiGuessersCorrect(state) {
+  const guessers = state.playerIds.filter((id) => id !== state.storytellerId);
+  return guessers.length > 0 && guessers.every((id) => state.correctGuessers.includes(id));
+}
+
 export function tickEmoji(state) {
-  if (state.timer <= 0) return state;
+  if (state.timer == null || state.timer <= 0) return state;
   return { ...state, timer: state.timer - 1 };
 }
 
@@ -138,7 +140,7 @@ export function nextEmojiRound(state, rng) {
     guesses: [],
     correctGuessers: [],
     round: state.round + 1,
-    timer: COMPOSE_DURATION,
+    timer: null,
     promptIndex,
     roundWinnerId: null,
   };
