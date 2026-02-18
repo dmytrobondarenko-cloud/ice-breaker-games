@@ -32,7 +32,9 @@ export default function TruthsGame({ game, room, me, send }) {
       <div className="game-header">
         <span>Two Truths & a Lie</span>
         <span>Round {game.round}</span>
-        {game.timer != null && <span className="voting-timer">{game.timer}s</span>}
+        {game.timer != null && (
+          <span className={`voting-timer${game.timer <= 15 ? " timer-urgent" : ""}`}>{game.timer}s</span>
+        )}
       </div>
 
       {game.status === "submitting" && isPresenter && (

@@ -34,7 +34,7 @@ export default function TriviaGame({ game, room, me, send }) {
             ? `Set ${game.triviaRound || 1} Complete`
             : `Q${game.questionIndex + 1}/${game.totalQuestions} (Set ${game.triviaRound || 1})`}
         </span>
-        <span className="voting-timer">{game.timer}s</span>
+        <span className={`voting-timer${game.timer <= 15 ? " timer-urgent" : ""}`}>{game.timer}s</span>
       </div>
 
       {game.status === "round_complete" ? (

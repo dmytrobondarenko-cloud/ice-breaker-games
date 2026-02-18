@@ -13,7 +13,7 @@ export default function VotingPhase({ voting, room, me, send }) {
     <main className="voting-stage">
       <div className="voting-header">
         <div className="status">Vote for the next game!</div>
-        <div className="voting-timer">{voting.timer}s</div>
+        <div className={`voting-timer${voting.timer <= 15 ? " timer-urgent" : ""}`}>{voting.timer}s</div>
       </div>
       <div className="game-grid">
         {voting.availableGames.map((game) => {

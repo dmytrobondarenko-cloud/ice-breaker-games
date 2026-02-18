@@ -391,6 +391,25 @@ function serializeSnake(game) {
 function startTruths(room, players) {
   room.game = createTruthsState({ players });
   broadcastGameState(room);
+  startTruthsTick(room);
+}
+
+function startTruthsTick(room) {
+  stopLoop(room);
+  room.interval = setInterval(() => {
+    room.game = tickTruths(room.game);
+    broadcastGameState(room);
+    if (room.game.timer <= 0) {
+      if (room.game.status === "submitting") {
+        stopLoop(room);
+        room.game = nextTruthsRound(room.game);
+        broadcastGameState(room);
+        startTruthsTick(room);
+      } else if (room.game.status === "voting") {
+        triggerTruthsReveal(room);
+      }
+    }
+  }, 1000);
 }
 
 function triggerTruthsReveal(room) {
@@ -410,6 +429,7 @@ function startTruthsRevealTimer(room) {
       awardRoundWin(room, room.game.roundWinnerId);
       room.game = nextTruthsRound(room.game);
       broadcastGameState(room);
+      startTruthsTick(room);
     }
   }, 1000);
 }

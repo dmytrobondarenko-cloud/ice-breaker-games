@@ -49,7 +49,9 @@ export default function EmojiGame({ game, room, me, send }) {
       <div className="game-header">
         <span>Emoji Storytelling</span>
         <span>Round {game.round}</span>
-        {game.timer != null && <span className="voting-timer">{game.timer}s</span>}
+        {game.timer != null && (
+          <span className={`voting-timer${game.timer <= 15 ? " timer-urgent" : ""}`}>{game.timer}s</span>
+        )}
       </div>
 
       {game.status === "composing" && isStoryteller && (
