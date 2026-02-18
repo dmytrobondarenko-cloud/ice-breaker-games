@@ -13,6 +13,8 @@ export function createGameState({ rows, cols, players, rng }) {
     { x: cols - 3, y: 2, dir: DIRECTIONS.LEFT },
     { x: 2, y: rows - 3, dir: DIRECTIONS.RIGHT },
     { x: cols - 3, y: rows - 3, dir: DIRECTIONS.LEFT },
+    { x: Math.floor(cols / 2), y: 2, dir: DIRECTIONS.DOWN },
+    { x: Math.floor(cols / 2), y: rows - 3, dir: DIRECTIONS.UP },
   ];
 
   const snakes = new Map();

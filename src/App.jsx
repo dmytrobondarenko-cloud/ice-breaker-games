@@ -1,30 +1,51 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import Lobby from "./Lobby.jsx";
+import VotingPhase from "./VotingPhase.jsx";
+import SnakeGame from "./games/SnakeGame.jsx";
+import TruthsGame from "./games/TruthsGame.jsx";
+import EmojiGame from "./games/EmojiGame.jsx";
+import SketchGame from "./games/SketchGame.jsx";
+import TriviaGame from "./games/TriviaGame.jsx";
+
+function getWsUrl() {
+  const isDev = window.location.port === "5173";
+  const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+  const host = window.location.hostname;
+  const port = isDev ? 3000 : window.location.port;
+  return `${protocol}//${host}:${port}`;
+}
 
 const KEY_TO_DIR = {
-  ArrowUp: "UP",
-  ArrowDown: "DOWN",
-  ArrowLeft: "LEFT",
-  ArrowRight: "RIGHT",
-  w: "UP",
-  s: "DOWN",
-  a: "LEFT",
-  d: "RIGHT",
+  ArrowUp: "UP", ArrowDown: "DOWN", ArrowLeft: "LEFT", ArrowRight: "RIGHT",
+  w: "UP", s: "DOWN", a: "LEFT", d: "RIGHT",
 };
 
-const WS_PORT = 8080;
+const GAME_COMPONENTS = {
+  snake: SnakeGame, truths: TruthsGame, emoji: EmojiGame,
+  sketch: SketchGame, trivia: TriviaGame,
+};
+
+const GAME_LABELS = {
+  snake: "Snake Arena", truths: "Two Truths & a Lie",
+  emoji: "Emoji Storytelling", sketch: "Sketch & Guess", trivia: "Speed Trivia",
+};
 
 export default function App() {
   const wsRef = useRef(null);
   const [connection, setConnection] = useState("connecting");
-  const [me, setMe] = useState({ id: null, name: "" });
+  const [me, setMe] = useState({ id: null });
   const [room, setRoom] = useState(null);
   const [game, setGame] = useState(null);
+  const [voting, setVoting] = useState(null);
   const [error, setError] = useState("");
-  const [nameInput, setNameInput] = useState("");
-  const [codeInput, setCodeInput] = useState("");
+
+  const send = (payload) => {
+    if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
+    wsRef.current.send(JSON.stringify(payload));
+  };
 
   useEffect(() => {
-    const ws = new WebSocket(`ws://${window.location.hostname}:${WS_PORT}`);
+    const ws = new WebSocket(getWsUrl());
     wsRef.current = ws;
 
     ws.addEventListener("open", () => setConnection("open"));
@@ -32,225 +53,106 @@ export default function App() {
     ws.addEventListener("error", () => setConnection("error"));
 
     ws.addEventListener("message", (event) => {
-      const message = JSON.parse(event.data);
-      if (message.type === "welcome") {
-        setMe((prev) => ({ ...prev, id: message.id }));
-        return;
-      }
-      if (message.type === "room") {
-        setRoom(message.room);
-        return;
-      }
-      if (message.type === "state") {
-        setGame(message.state);
-        return;
-      }
-      if (message.type === "error") {
-        setError(message.message);
+      const msg = JSON.parse(event.data);
+      switch (msg.type) {
+        case "welcome":
+          setMe({ id: msg.id });
+          break;
+        case "room":
+          setRoom(msg.room);
+          setError("");
+          if (msg.room.status === "voting") setGame(null);
+          break;
+        case "state":
+          setGame(msg.state);
+          break;
+        case "vote_state":
+          setVoting(msg.voting);
+          break;
+        case "error":
+          setError(msg.message);
+          break;
       }
     });
 
-    return () => {
-      ws.close();
-    };
+    return () => ws.close();
   }, []);
 
   useEffect(() => {
     const handleKey = (event) => {
+      if (room?.currentGame !== "snake") return;
       const dir = KEY_TO_DIR[event.key];
       if (dir) {
         event.preventDefault();
         send({ type: "input", dir });
-        return;
-      }
-      if ((event.key === "r" || event.key === "R") && isHost(room, me.id)) {
-        send({ type: "restart" });
       }
     };
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
-  }, [room, me.id]);
+  }, [room?.currentGame]);
 
-  const send = (payload) => {
-    if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
-    wsRef.current.send(JSON.stringify(payload));
-  };
-
-  const handleHost = () => {
-    setError("");
-    send({ type: "host", name: nameInput || "Player" });
-  };
-
-  const handleJoin = () => {
-    setError("");
-    send({ type: "join", code: codeInput.trim().toUpperCase(), name: nameInput || "Player" });
-  };
-
-  const handleStart = () => send({ type: "start" });
-  const handleRestart = () => send({ type: "restart" });
-
-  const snakeCells = useMemo(() => {
-    const map = new Map();
-    if (!game?.snakes) return map;
-    game.snakes.forEach((snake) => {
-      snake.body.forEach((segment, index) => {
-        const key = keyOf(segment);
-        map.set(key, {
-          color: snake.color,
-          head: index === 0,
-          alive: snake.alive,
-        });
-      });
-    });
-    return map;
-  }, [game]);
-
-  const boardCells = useMemo(() => {
-    if (!game) return [];
-    const cells = [];
-    for (let y = 0; y < game.rows; y += 1) {
-      for (let x = 0; x < game.cols; x += 1) {
-        const key = `${x},${y}`;
-        const snakeCell = snakeCells.get(key);
-        let style = undefined;
-        let className = "cell";
-        if (snakeCell) {
-          className += " snake";
-          if (snakeCell.head) className += " head";
-          if (!snakeCell.alive) className += " dead";
-          style = { background: snakeCell.color };
-        }
-        if (game.food && key === keyOf(game.food)) className += " food";
-        cells.push(<div key={key} className={className} style={style} />);
-      }
-    }
-    return cells;
-  }, [game, snakeCells]);
-
-  const statusLabel = useMemo(() => {
-    if (!room) return "";
-    if (room.status === "lobby") return "Waiting for players";
-    if (game?.status === "gameover") return "Game Over";
-    if (game?.status === "win") return "Board Full";
-    return "";
-  }, [room, game]);
+  const isHost = room?.hostId === me.id;
+  const GameComponent = room?.currentGame ? GAME_COMPONENTS[room.currentGame] : null;
+  const gameLabel = room?.currentGame ? GAME_LABELS[room.currentGame] : null;
 
   return (
     <div className="app">
       <header className="topbar">
-        <div className="title">Snake Arena</div>
+        <div className="title">
+          {room?.status === "playing" && gameLabel ? gameLabel : "Game Arena"}
+        </div>
         <div className="score">{room ? `Room ${room.code}` : ""}</div>
       </header>
 
-      {!room && (
+      {!room && <Lobby connection={connection} error={error} send={send} />}
+
+      {room && room.status === "lobby" && (
         <main className="lobby">
           <div className="panel">
-            <div className="status">Online multiplayer for up to 4 players.</div>
-            <label className="field">
-              <span>Name</span>
-              <input
-                value={nameInput}
-                onChange={(event) => setNameInput(event.target.value)}
-                placeholder="Player"
-              />
-            </label>
-            <label className="field">
-              <span>Room Code</span>
-              <input
-                value={codeInput}
-                onChange={(event) => setCodeInput(event.target.value.toUpperCase())}
-                placeholder="AB12"
-                maxLength={4}
-              />
-            </label>
-            <div className="actions">
-              <button type="button" onClick={handleHost} disabled={connection !== "open"}>
-                Host Room
-              </button>
-              <button type="button" onClick={handleJoin} disabled={connection !== "open"}>
-                Join Room
-              </button>
+            <div className="status">Waiting for players...</div>
+            <div className="players">
+              {room.players.map((player) => (
+                <div key={player.id} className="player">
+                  <span className="swatch" style={{ background: player.color }} />
+                  <span>{player.name}</span>
+                  <span>{room.gameWins?.[player.id] || 0} games won</span>
+                  {room.hostId === player.id ? <span>★</span> : null}
+                </div>
+              ))}
             </div>
-            <div className="status">
-              {connection === "open" ? "Connected" : `Connection: ${connection}`}
-            </div>
+            <div className="status">Room code: {room.code}</div>
+            {isHost && (
+              <div className="actions">
+                <button type="button" onClick={() => send({ type: "start" })}>
+                  Start Games
+                </button>
+              </div>
+            )}
             {error && <div className="error">{error}</div>}
           </div>
         </main>
       )}
 
-      {room && (
-        <main className="stage">
-          <div className="board" style={{ gridTemplateColumns: `repeat(${game?.cols || 20}, 1fr)` }}>
-            {boardCells}
-          </div>
-          <div className="panel">
-            <div className="status" aria-live="polite">
-              {statusLabel || "Use arrow keys or WASD"}
-            </div>
-            <div className="players">
-              {room.players.map((player) => {
-                const snake = game?.snakes?.find((entry) => entry.id === player.id);
-                return (
-                  <div key={player.id} className="player">
-                    <span className="swatch" style={{ background: player.color }} />
-                    <span>{player.name}</span>
-                    <span>{snake?.score ?? 0}</span>
-                    {!snake?.alive && room.status !== "lobby" ? <span>✕</span> : null}
-                    {room.hostId === player.id ? <span>★</span> : null}
-                  </div>
-                );
-              })}
-            </div>
-            <div className="actions">
-              {isHost(room, me.id) && room.status === "lobby" && (
-                <button type="button" onClick={handleStart}>
-                  Start Game
-                </button>
-              )}
-              {isHost(room, me.id) && room.status !== "lobby" && (
-                <button type="button" onClick={handleRestart}>
-                  Restart
-                </button>
-              )}
-            </div>
-            <div className="status">Room code: {room.code}</div>
-          </div>
-        </main>
+      {room && room.status === "voting" && (
+        <VotingPhase voting={voting} room={room} me={me} send={send} />
       )}
 
-      {room && (
-        <section className="controls" aria-label="On-screen controls">
-          <div className="controls-row">
-            <button type="button" onClick={() => send({ type: "input", dir: "UP" })}>
-              Up
-            </button>
-          </div>
-          <div className="controls-row">
-            <button type="button" onClick={() => send({ type: "input", dir: "LEFT" })}>
-              Left
-            </button>
-            <button type="button" onClick={() => send({ type: "input", dir: "DOWN" })}>
-              Down
-            </button>
-            <button type="button" onClick={() => send({ type: "input", dir: "RIGHT" })}>
-              Right
-            </button>
-          </div>
-        </section>
+      {room && room.status === "playing" && GameComponent && (
+        <GameComponent game={game} room={room} me={me} send={send} />
       )}
 
       <footer className="footer">
-        <div>WASD / Arrows to move • Host can restart with R</div>
+        {room && isHost && room.status === "playing" && (
+          <button type="button" className="end-game-btn" onClick={() => send({ type: "endGame" })}>
+            End Game
+          </button>
+        )}
+        <div>
+          {room?.currentGame === "snake"
+            ? "WASD / Arrows to move"
+            : "Game Arena — Multiplayer Party Games"}
+        </div>
       </footer>
     </div>
   );
-}
-
-function keyOf(cell) {
-  return `${cell.x},${cell.y}`;
-}
-
-function isHost(room, id) {
-  return room?.hostId === id;
 }

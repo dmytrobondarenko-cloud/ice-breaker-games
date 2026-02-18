@@ -142,6 +142,11 @@ button:hover {
   background: #ebe3d2;
 }
 
+button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
 .players {
   display: grid;
   gap: 6px;
@@ -149,10 +154,13 @@ button:hover {
 }
 
 .player {
-  display: grid;
-  grid-template-columns: 14px 1fr auto auto;
-  gap: 6px;
+  display: flex;
   align-items: center;
+  gap: 6px;
+}
+
+.player span:nth-child(2) {
+  flex: 1;
 }
 
 .swatch {
@@ -177,7 +185,304 @@ button:hover {
   font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 0.08em;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
+
+.end-game-btn {
+  font-size: 11px;
+  padding: 4px 8px;
+  border-color: #c04b3a;
+  color: #c04b3a;
+}
+
+.end-game-btn:hover {
+  background: #fef0ee;
+}
+
+.round-winner {
+  font-weight: 700;
+  color: #5a7d3a;
+}
+
+.leaderboard-title {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* ── Voting Phase ─────────────────────────────────────────── */
+
+.voting-stage {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.voting-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.voting-timer {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.game-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 10px;
+}
+
+.game-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px 12px;
+  text-align: left;
+  border: 2px solid #b6a88f;
+  background: #fdfaf3;
+}
+
+.game-card:hover {
+  border-color: #2a2a2a;
+  background: #f7f3ea;
+}
+
+.game-card-name {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.game-card-votes {
+  font-size: 11px;
+  opacity: 0.7;
+}
+
+/* ── Game Stage (shared across mini-games) ────────────────── */
+
+.game-stage {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.game-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 13px;
+}
+
+/* ── Two Truths & a Lie ───────────────────────────────────── */
+
+.truths-panel {
+  max-width: 600px;
+}
+
+.truths-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.truth-card {
+  text-align: left;
+  padding: 12px;
+  font-size: 13px;
+  text-transform: none;
+  letter-spacing: normal;
+  line-height: 1.4;
+  border: 2px solid #b6a88f;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.truth-card:hover:not(:disabled) {
+  border-color: #2a2a2a;
+}
+
+.truth-lie {
+  border-color: #c04b3a;
+  background: #fef0ee;
+}
+
+.truth-true {
+  border-color: #5a7d3a;
+  background: #f4fae9;
+}
+
+.truth-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+
+.lie-toggle {
+  font-size: 10px;
+  padding: 2px 6px;
+  margin-left: 8px;
+}
+
+.lie-selected {
+  background: #c04b3a;
+  color: #fff;
+  border-color: #c04b3a;
+}
+
+.lie-selected:hover {
+  background: #a83d30;
+}
+
+/* ── Emoji Storytelling ───────────────────────────────────── */
+
+.emoji-display {
+  font-size: 48px;
+  text-align: center;
+  padding: 20px 0;
+  line-height: 1.3;
+}
+
+/* ── Shared: Guess Feed ───────────────────────────────────── */
+
+.guess-row {
+  display: flex;
+  gap: 8px;
+}
+
+.guess-row input {
+  flex: 1;
+  font-family: inherit;
+  padding: 8px 10px;
+  border: 1px solid #2a2a2a;
+  background: #f7f3ea;
+}
+
+.guess-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.guess-item {
+  padding: 4px 0;
+  border-bottom: 1px solid #eee6d7;
+}
+
+.guess-correct {
+  color: #5a7d3a;
+  font-weight: 700;
+}
+
+/* ── Sketch & Guess ───────────────────────────────────────── */
+
+.sketch-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 240px;
+  gap: 16px;
+}
+
+.sketch-canvas-area {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sketch-canvas {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background: #fff;
+  border: 2px solid #b6a88f;
+  cursor: crosshair;
+  touch-action: none;
+}
+
+.sketch-tools {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sketch-sidebar {
+  max-height: 480px;
+  overflow-y: auto;
+}
+
+.color-btn {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border-radius: 50%;
+  border: 2px solid transparent;
+}
+
+.color-active {
+  border-color: #2a2a2a;
+  box-shadow: 0 0 0 2px #f7f3ea, 0 0 0 4px #2a2a2a;
+}
+
+/* ── Speed Trivia ─────────────────────────────────────────── */
+
+.trivia-panel {
+  max-width: 640px;
+}
+
+.trivia-question {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.4;
+  padding: 8px 0;
+}
+
+.trivia-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.trivia-option {
+  padding: 14px 12px;
+  font-size: 13px;
+  text-transform: none;
+  letter-spacing: normal;
+  text-align: left;
+  border: 2px solid #b6a88f;
+  line-height: 1.3;
+}
+
+.trivia-option:hover:not(:disabled) {
+  border-color: #2a2a2a;
+}
+
+.trivia-selected {
+  border-color: #3d5a80;
+  background: #eaf0f7;
+}
+
+.trivia-correct {
+  border-color: #5a7d3a;
+  background: #f4fae9;
+}
+
+.trivia-wrong {
+  border-color: #c04b3a;
+  background: #fef0ee;
+}
+
+/* ── Responsive ───────────────────────────────────────────── */
 
 @media (max-width: 720px) {
   #root {
@@ -185,6 +490,14 @@ button:hover {
   }
 
   .stage {
+    grid-template-columns: 1fr;
+  }
+
+  .sketch-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .trivia-options {
     grid-template-columns: 1fr;
   }
 
