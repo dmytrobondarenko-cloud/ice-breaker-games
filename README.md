@@ -19,8 +19,8 @@ A collection of real-time multiplayer icebreaker games for up to 6 players. Host
 # First time only:
 #   1. Install Node.js from https://nodejs.org (LTS version)
 #   2. Then run:
-git clone https://github.com/androidua/snake-arena.git
-cd snake-arena
+git clone https://github.com/dmytrobondarenko-cloud/ice-breaker-games.git
+cd ice-breaker-games
 npm install
 
 # Every time you want to play:
@@ -78,8 +78,8 @@ Node.js is the engine that runs the game server.
 Open Terminal (macOS) or PowerShell (Windows) and run:
 
 ```bash
-git clone https://github.com/androidua/snake-arena.git
-cd snake-arena
+git clone https://github.com/dmytrobondarenko-cloud/ice-breaker-games.git
+cd ice-breaker-games
 ```
 
 ### Step 4: Install Dependencies
@@ -109,7 +109,7 @@ This is the most common scenario: you want to play with friends who are NOT on t
 **Terminal 1 — Start the game server:**
 
 ```bash
-cd snake-arena
+cd ice-breaker-games
 npm start
 ```
 
@@ -188,7 +188,7 @@ If everyone is in the same room or on the same Wi-Fi network, you don't need a t
 ### 1. Start the server
 
 ```bash
-cd snake-arena
+cd ice-breaker-games
 npm start
 ```
 
@@ -279,7 +279,7 @@ Open **http://localhost:5173**. The frontend auto-connects to the game server on
 |---------|----------|
 | `npm: command not found` | Node.js is not installed. See Step 1 in First-Time Setup. |
 | `git: command not found` | Git is not installed. See Step 2 in First-Time Setup. |
-| `npm start` shows an error | Make sure you ran `npm install` first. Make sure you're in the `snake-arena` folder. |
+| `npm start` shows an error | Make sure you ran `npm install` first. Make sure you're in the `ice-breaker-games` folder. |
 | Friends can't open the URL | Make sure your tunnel is still running (Terminal 2). The URL changes each session. |
 | Page loads but shows "Connection: connecting" | The game server (Terminal 1) might have stopped. Check that `npm start` is still running. |
 | "Room not found" error | Double-check the 4-character room code. It's case-insensitive. |
@@ -303,7 +303,7 @@ PORT=8080 npm start
 ## Project Structure
 
 ```
-snake-arena/
+ice-breaker-games/
 ├── src/                    # Frontend (React + Vite)
 │   ├── App.jsx             # Main app — WS connection, routing
 │   ├── Lobby.jsx           # Host/join room UI
