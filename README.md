@@ -122,7 +122,7 @@ Game server running on http://localhost:3000
 Open http://localhost:3000 in your browser to play.
 ```
 
-Leave this terminal running. **Do not close it** — it's your game server.
+Leave this terminal running. **Do not close it** — it's your game server. To stop the server later, press **Ctrl + C** in this terminal.
 
 **Terminal 2 — Create a public link:**
 
