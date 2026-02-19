@@ -47,7 +47,7 @@ body {
 
 .stage {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 220px;
+  grid-template-columns: minmax(0, 1fr) 240px;
   gap: 16px;
 }
 
@@ -93,6 +93,8 @@ body {
   padding: 12px;
   border: 1px solid #c8bca7;
   background: #fdfaf3;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .field {
@@ -438,10 +440,16 @@ button:disabled {
 .guess-row {
   display: flex;
   gap: 8px;
+  min-width: 0;
+}
+
+.guess-row button {
+  flex-shrink: 0;
 }
 
 .guess-row input {
   flex: 1;
+  min-width: 0;
   font-family: inherit;
   padding: 8px 10px;
   border: 1px solid #2a2a2a;
@@ -471,7 +479,7 @@ button:disabled {
 
 .sketch-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 240px;
+  grid-template-columns: minmax(0, 1fr) 280px;
   gap: 16px;
 }
 
@@ -497,8 +505,9 @@ button:disabled {
 }
 
 .sketch-sidebar {
-  max-height: 480px;
+  max-height: 520px;
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .color-btn {
