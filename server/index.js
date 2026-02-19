@@ -193,8 +193,10 @@ function handleSkipPhase(clientId) {
       break;
     case "emoji":
       if (room.game.status === "composing") {
+        stopLoop(room);
         room.game = nextEmojiRound(room.game, Math.random);
         broadcastGameState(room);
+        startEmojiComposeTimer(room);
       } else if (room.game.status === "guessing") {
         triggerEmojiReveal(room);
       }
@@ -320,14 +322,20 @@ function handleGameAction(ws, clientId, action) {
         broadcastGameState(room);
       }
       break;
-    case "emoji":
+    case "emoji": {
+      const prevEmojiStatus = room.game.status;
       room.game = handleEmojiAction(room.game, clientId, action);
+      // Emojis submitted: composing → guessing — stop the compose timer
+      if (prevEmojiStatus === "composing" && room.game.status === "guessing") {
+        stopLoop(room);
+      }
       if (room.game.status === "guessing" && allEmojiGuessersCorrect(room.game)) {
         triggerEmojiReveal(room);
       } else {
         broadcastGameState(room);
       }
       break;
+    }
     case "sketch":
       room.game = handleSketchAction(room.game, clientId, action);
       if (room.game.status === "drawing" && allSketchGuessersCorrect(room.game)) {
@@ -435,11 +443,27 @@ function startTruthsRevealTimer(room) {
 }
 
 // ── Emoji Storytelling ───────────────────────────────────────────
-// No interval during composing/guessing. Only reveal uses a timer.
 
 function startEmojiGame(room, players) {
   room.game = createEmojiState({ players, rng: Math.random });
   broadcastGameState(room);
+  startEmojiComposeTimer(room);
+}
+
+// 45-second countdown for the storyteller to pick their emojis.
+// If time runs out before submission, the round is skipped.
+function startEmojiComposeTimer(room) {
+  stopLoop(room);
+  room.interval = setInterval(() => {
+    room.game = tickEmoji(room.game);
+    broadcastGameState(room);
+    if (room.game.status === "composing" && room.game.timer <= 0) {
+      stopLoop(room);
+      room.game = nextEmojiRound(room.game, Math.random);
+      broadcastGameState(room);
+      startEmojiComposeTimer(room);
+    }
+  }, 1000);
 }
 
 function triggerEmojiReveal(room) {
@@ -459,6 +483,7 @@ function startEmojiRevealTimer(room) {
       awardRoundWin(room, room.game.roundWinnerId);
       room.game = nextEmojiRound(room.game, Math.random);
       broadcastGameState(room);
+      startEmojiComposeTimer(room);
     }
   }, 1000);
 }
