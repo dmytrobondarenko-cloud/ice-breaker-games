@@ -2,16 +2,26 @@ const SUBMIT_DURATION = 60;
 const VOTE_DURATION = 30;
 const REVEAL_DURATION = 8;
 
-export function createTruthsState({ players }) {
+// Shuffle playerIds and return the first player plus the remaining queue.
+// When the queue runs out, a new shuffled cycle begins automatically.
+function buildTurnQueue(playerIds, rng) {
+  const shuffled = [...playerIds].sort(() => rng() - 0.5);
+  return { firstId: shuffled[0], queue: shuffled.slice(1) };
+}
+
+export function createTruthsState({ players, rng }) {
   const playerIds = players.map((p) => p.id);
   const scores = new Map();
   playerIds.forEach((id) => scores.set(id, 0));
+
+  const { firstId, queue } = buildTurnQueue(playerIds, rng);
 
   return {
     gameType: "truths",
     status: "submitting",
     playerIds,
-    presenterId: playerIds[0],
+    presenterId: firstId,
+    turnQueue: queue,
     statements: null,
     lieIndex: null,
     votes: new Map(),
@@ -95,12 +105,22 @@ export function revealTruths(state) {
   return { ...state, status: "reveal", scores, timer: REVEAL_DURATION, roundWinnerId };
 }
 
-export function nextTruthsRound(state) {
-  const nextIndex = state.round % state.playerIds.length;
+export function nextTruthsRound(state, rng) {
+  // Advance through the shuffled queue; reshuffle when it empties.
+  let queue = state.turnQueue || [];
+  let nextId;
+  if (queue.length > 0) {
+    [nextId, ...queue] = queue;
+  } else {
+    const shuffled = [...state.playerIds].sort(() => rng() - 0.5);
+    [nextId, ...queue] = shuffled;
+  }
+
   return {
     ...state,
     status: "submitting",
-    presenterId: state.playerIds[nextIndex],
+    presenterId: nextId,
+    turnQueue: queue,
     statements: null,
     lieIndex: null,
     votes: new Map(),

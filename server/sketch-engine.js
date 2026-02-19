@@ -15,21 +15,27 @@ export function createSketchState({ players, rng }) {
   const scores = new Map();
   playerIds.forEach((id) => scores.set(id, 0));
 
-  const shuffled = [...WORDS].sort(() => rng() - 0.5);
+  const shuffledWords = [...WORDS].sort(() => rng() - 0.5);
+
+  // Shuffle player order so the first drawer is random.
+  const shuffledPlayers = [...playerIds].sort(() => rng() - 0.5);
+  const firstDrawer = shuffledPlayers[0];
+  const turnQueue = shuffledPlayers.slice(1);
 
   return {
     gameType: "sketch",
     status: "drawing",
     playerIds,
-    drawerId: playerIds[0],
-    word: shuffled[0],
+    drawerId: firstDrawer,
+    turnQueue,
+    word: shuffledWords[0],
     strokes: [],
     guesses: [],
     correctGuessers: [],
     scores,
     round: 1,
     timer: DRAW_DURATION,
-    wordPool: shuffled,
+    wordPool: shuffledWords,
     roundWinnerId: null,
   };
 }
@@ -103,14 +109,24 @@ export function revealSketch(state) {
   return { ...state, status: "reveal", timer: REVEAL_DURATION, roundWinnerId };
 }
 
-export function nextSketchRound(state) {
-  const nextIndex = state.round % state.playerIds.length;
+export function nextSketchRound(state, rng) {
+  // Advance through the shuffled queue; reshuffle when it empties.
+  let queue = state.turnQueue || [];
+  let nextDrawer;
+  if (queue.length > 0) {
+    [nextDrawer, ...queue] = queue;
+  } else {
+    const shuffled = [...state.playerIds].sort(() => rng() - 0.5);
+    [nextDrawer, ...queue] = shuffled;
+  }
+
   const word = state.wordPool[state.round % state.wordPool.length];
 
   return {
     ...state,
     status: "drawing",
-    drawerId: state.playerIds[nextIndex],
+    drawerId: nextDrawer,
+    turnQueue: queue,
     word,
     strokes: [],
     guesses: [],

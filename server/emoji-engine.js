@@ -107,21 +107,27 @@ export function createEmojiState({ players, rng }) {
   const scores = new Map();
   playerIds.forEach((id) => scores.set(id, 0));
 
-  const shuffled = [...PROMPTS].sort(() => rng() - 0.5);
+  const shuffledPrompts = [...PROMPTS].sort(() => rng() - 0.5);
+
+  // Shuffle player order so the first storyteller is random.
+  const shuffledPlayers = [...playerIds].sort(() => rng() - 0.5);
+  const firstStoryteller = shuffledPlayers[0];
+  const turnQueue = shuffledPlayers.slice(1);
 
   return {
     gameType: "emoji",
     status: "composing",
     playerIds,
-    storytellerId: playerIds[0],
-    prompt: shuffled[0],
+    storytellerId: firstStoryteller,
+    turnQueue,
+    prompt: shuffledPrompts[0],
     emojis: null,
     guesses: [],
     correctGuessers: [],
     scores,
     round: 1,
     timer: COMPOSE_DURATION,
-    promptPool: shuffled,
+    promptPool: shuffledPrompts,
     promptIndex: 0,
     roundWinnerId: null,
   };
@@ -198,13 +204,23 @@ export function revealEmoji(state) {
 }
 
 export function nextEmojiRound(state, rng) {
-  const nextIndex = state.round % state.playerIds.length;
+  // Advance through the shuffled queue; reshuffle when it empties.
+  let queue = state.turnQueue || [];
+  let nextStoryteller;
+  if (queue.length > 0) {
+    [nextStoryteller, ...queue] = queue;
+  } else {
+    const shuffled = [...state.playerIds].sort(() => rng() - 0.5);
+    [nextStoryteller, ...queue] = shuffled;
+  }
+
   const promptIndex = state.round % state.promptPool.length;
 
   return {
     ...state,
     status: "composing",
-    storytellerId: state.playerIds[nextIndex],
+    storytellerId: nextStoryteller,
+    turnQueue: queue,
     prompt: state.promptPool[promptIndex],
     emojis: null,
     guesses: [],

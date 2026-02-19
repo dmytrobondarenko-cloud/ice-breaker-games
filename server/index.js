@@ -185,7 +185,7 @@ function handleSkipPhase(clientId) {
   switch (room.currentGame) {
     case "truths":
       if (room.game.status === "submitting") {
-        room.game = nextTruthsRound(room.game);
+        room.game = nextTruthsRound(room.game, Math.random);
         broadcastGameState(room);
       } else if (room.game.status === "voting") {
         triggerTruthsReveal(room);
@@ -397,7 +397,7 @@ function serializeSnake(game) {
 // Only the reveal phase uses a timed interval.
 
 function startTruths(room, players) {
-  room.game = createTruthsState({ players });
+  room.game = createTruthsState({ players, rng: Math.random });
   broadcastGameState(room);
   startTruthsTick(room);
 }
@@ -410,7 +410,7 @@ function startTruthsTick(room) {
     if (room.game.timer <= 0) {
       if (room.game.status === "submitting") {
         stopLoop(room);
-        room.game = nextTruthsRound(room.game);
+        room.game = nextTruthsRound(room.game, Math.random);
         broadcastGameState(room);
         startTruthsTick(room);
       } else if (room.game.status === "voting") {
@@ -435,7 +435,7 @@ function startTruthsRevealTimer(room) {
     if (room.game.timer <= 0) {
       stopLoop(room);
       awardRoundWin(room, room.game.roundWinnerId);
-      room.game = nextTruthsRound(room.game);
+      room.game = nextTruthsRound(room.game, Math.random);
       broadcastGameState(room);
       startTruthsTick(room);
     }
@@ -521,7 +521,7 @@ function startSketchRevealTimer(room) {
     if (room.game.timer <= 0) {
       stopLoop(room);
       awardRoundWin(room, room.game.roundWinnerId);
-      room.game = nextSketchRound(room.game);
+      room.game = nextSketchRound(room.game, Math.random);
       broadcastGameState(room);
       startSketchDrawTimer(room);
     }
