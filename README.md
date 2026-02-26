@@ -2,6 +2,8 @@
 
 A collection of real-time multiplayer icebreaker games for up to 6 players. Host a room, share a link, vote on which game to play, and compete!
 
+**Works on mobile** — players can join from phones or tablets. Snake supports swipe-to-move and on-screen arrow buttons. Sketch & Guess supports finger drawing. All other games are tap-friendly with large touch targets.
+
 **Included games:**
 - **Snake Arena** — Classic multiplayer snake. Eat food, grow, outlast opponents.
 - **Two Truths & a Lie** — One player writes three statements. Others guess which is the lie.
@@ -270,7 +272,9 @@ Open **http://localhost:5173**. The frontend auto-connects to the game server on
 
 ### Snake Arena
 
-**Controls:** Arrow keys or WASD to move.
+**Controls:**
+- **Desktop:** Arrow keys or WASD
+- **Mobile:** Swipe on the board in any direction, or tap the on-screen arrow buttons
 
 **How it works:** Each player controls a snake on a shared 25×25 grid. Your snake moves forward continuously — you can only change direction. Eat the red food pellets to grow longer and score points. If your snake hits a wall, another snake, or its own body, you die. Solo play is fully supported — the game only ends when your snake actually dies, not when you're the last one left.
 
@@ -315,7 +319,7 @@ Open **http://localhost:5173**. The frontend auto-connects to the game server on
 
 ### Sketch & Guess
 
-**How it works:** Players take turns as the drawer. The drawer sees a secret word and draws it on a canvas using their mouse or trackpad. Color options (black, blue, red, yellow, green) and a clear button are available. Other players see the drawing in real time and type guesses. Guessing happens live while the drawer is still drawing.
+**How it works:** Players take turns as the drawer. The drawer sees a secret word and draws it on a canvas using their mouse, trackpad, or finger (touch screens fully supported). Color options (black, blue, red, yellow, green) and a clear button are available. Other players see the drawing in real time and type guesses. Guessing happens live while the drawer is still drawing.
 
 **Scoring:** Same as Emoji Storytelling:
 - 1st correct guesser → **4 points**
