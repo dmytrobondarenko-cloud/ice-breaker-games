@@ -26,11 +26,13 @@ cd ice-breaker-games
 npm install
 
 # Every time you want to play:
-npm start                        # starts the game server
+npm start                        # Terminal 1 — starts the game server
 
 # To let friends join over the internet, open a SECOND terminal:
-cloudflared tunnel --url http://localhost:3000   # gives you a public URL to share
+cloudflared tunnel --url http://localhost:3000   # Terminal 2 — gives you a public URL to share
 # (install cloudflared first: brew install cloudflared  OR  winget install Cloudflare.cloudflared)
+
+# When you're done: press Ctrl+C in Terminal 2 to stop the tunnel, then Ctrl+C in Terminal 1 to stop the server.
 ```
 
 Send the URL to your friends. They open it in their browser — nothing to install on their end. One person clicks **Host Room**, shares the 4-character room code, everyone else clicks **Join Room**.
@@ -127,55 +129,37 @@ Open http://localhost:3000 in your browser to play.
 
 Leave this terminal running. **Do not close it** — it's your game server. To stop the server later, press **Ctrl + C** in this terminal.
 
-**Terminal 2 — Create a public link:**
+**Terminal 2 — Create a public link with Cloudflare Tunnel:**
 
-Open a second terminal window and run one of these (pick whichever works for you):
-
-**Option A — Cloudflare Tunnel (recommended — no signup, fast, reliable):**
+Open a second terminal window. If you haven't installed `cloudflared` yet, do that first (one time only):
 
 macOS:
 ```bash
 brew install cloudflared
-cloudflared tunnel --url http://localhost:3000
 ```
 
 Windows (PowerShell as Administrator):
 ```powershell
 winget install Cloudflare.cloudflared
-cloudflared tunnel --url http://localhost:3000
 ```
 
-Or download directly from https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/
+Or download the installer directly from https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/
+
+Then start the tunnel:
+```bash
+cloudflared tunnel --url http://localhost:3000
+```
 
 You'll see a public URL like:
 ```
 https://some-random-words.trycloudflare.com
 ```
 
-**Option B — localtunnel (no install required, no signup):**
-```bash
-npx localtunnel --port 3000
-```
-You'll see something like:
-```
-your url is: https://ugly-fish-42.loca.lt
-```
-
-**Option C — ngrok (free signup required):**
-1. Create a free account at https://ngrok.com
-2. Download and install ngrok from the dashboard
-3. Authenticate (one time only):
-   ```bash
-   ngrok config add-authtoken YOUR_TOKEN_HERE
-   ```
-4. Start the tunnel:
-   ```bash
-   ngrok http 3000
-   ```
+> **No Cloudflare?** If you can't install it, run `npx localtunnel --port 3000` instead — no install or signup needed. You'll get a URL like `https://ugly-fish-42.loca.lt`. Note: localtunnel may show a warning page the first time; click through it once and refresh.
 
 ### Share the link and play
 
-1. **Copy the public URL** from your tunnel (e.g., `https://ugly-fish-42.loca.lt`)
+1. **Copy the public URL** from the tunnel terminal
 2. **Send it to your friends** via text, Slack, Discord, email — whatever you use
 3. Friends open the URL in their browser. They'll see the Game Arena lobby.
 4. **You** (the host) also open the same URL in your browser
@@ -185,6 +169,13 @@ your url is: https://ugly-fish-42.loca.lt
 8. Once everyone's in (up to 6 players), click **Start Games**
 9. Everyone votes on which game to play (30-second timer). The most-voted game starts automatically.
 10. The host clicks **End Game** when ready to move on — voting starts again for the next game.
+
+### When you're done playing
+
+1. **Stop the Cloudflare tunnel** — go to Terminal 2 and press **Ctrl + C**. The public URL immediately stops working, so no one can reach your computer any more.
+2. **Stop the game server** — go to Terminal 1 and press **Ctrl + C**. The server shuts down.
+
+That's it — nothing else to clean up. Cloudflare Tunnel creates a temporary connection each session; it doesn't install any background service and doesn't leave anything running.
 
 ### Important notes
 
@@ -377,8 +368,8 @@ The formula: `points = ceil((time_remaining / 15) × 1000)`, minimum 100.
 | "Room not found" error | Double-check the 4-character room code. It's case-insensitive. |
 | "Game already in progress" | Players can only join during the lobby phase, before the host clicks Start. |
 | Friend sees the page but can't connect | They might be using `localhost` instead of the tunnel URL. Share the tunnel URL (the `https://...` one). |
-| localtunnel asks for a password | Visit the URL once, accept the warning page, then refresh. This is a localtunnel quirk. |
-| ngrok shows "ERR_NGROK_8012" | Your ngrok authtoken is missing or expired. Re-run the `ngrok config add-authtoken` command. |
+| localtunnel shows a warning page | Click through it once and refresh. This is a localtunnel quirk. |
+| `cloudflared: command not found` | Install it first: `brew install cloudflared` (macOS) or `winget install Cloudflare.cloudflared` (Windows). |
 
 ---
 
