@@ -47,6 +47,7 @@ export function createGameState({ rows, cols, players, rng }) {
     food,
     status: "running",
     winnerId: null,
+    playerCount: players.length,
   };
 }
 
@@ -133,6 +134,11 @@ export function stepGame(state, rng) {
     }
   });
 
+  // Food fairness: if a snake ate food but died on the same tick, cancel the score.
+  for (const id of ateFood) {
+    if (!next.get(id).alive) ateFood.delete(id);
+  }
+
   let food = state.food;
   next.forEach((snake, id) => {
     if (!snake.alive) return;
@@ -153,7 +159,9 @@ export function stepGame(state, rng) {
   let status = food ? "running" : "win";
   let winnerId = null;
 
-  if (aliveSnakes.length <= 1) {
+  // Solo: only end when the snake actually dies (so single-player doesn't freeze).
+  // Multiplayer: end when one or zero snakes remain — last one standing wins.
+  if (aliveSnakes.length === 0 || (state.playerCount > 1 && aliveSnakes.length === 1)) {
     status = "gameover";
     winnerId = aliveSnakes[0]?.id || null;
   }

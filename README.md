@@ -27,7 +27,8 @@ npm install
 npm start                        # starts the game server
 
 # To let friends join over the internet, open a SECOND terminal:
-npx localtunnel --port 3000      # gives you a public URL to share
+cloudflared tunnel --url http://localhost:3000   # gives you a public URL to share
+# (install cloudflared first: brew install cloudflared  OR  winget install Cloudflare.cloudflared)
 ```
 
 Send the URL to your friends. They open it in their browser — nothing to install on their end. One person clicks **Host Room**, shares the 4-character room code, everyone else clicks **Join Room**.
@@ -128,7 +129,28 @@ Leave this terminal running. **Do not close it** — it's your game server. To s
 
 Open a second terminal window and run one of these (pick whichever works for you):
 
-**Option A — localtunnel (easiest, no signup):**
+**Option A — Cloudflare Tunnel (recommended — no signup, fast, reliable):**
+
+macOS:
+```bash
+brew install cloudflared
+cloudflared tunnel --url http://localhost:3000
+```
+
+Windows (PowerShell as Administrator):
+```powershell
+winget install Cloudflare.cloudflared
+cloudflared tunnel --url http://localhost:3000
+```
+
+Or download directly from https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/
+
+You'll see a public URL like:
+```
+https://some-random-words.trycloudflare.com
+```
+
+**Option B — localtunnel (no install required, no signup):**
 ```bash
 npx localtunnel --port 3000
 ```
@@ -137,7 +159,7 @@ You'll see something like:
 your url is: https://ugly-fish-42.loca.lt
 ```
 
-**Option B — ngrok (most reliable, free signup required):**
+**Option C — ngrok (free signup required):**
 1. Create a free account at https://ngrok.com
 2. Download and install ngrok from the dashboard
 3. Authenticate (one time only):
@@ -148,19 +170,6 @@ your url is: https://ugly-fish-42.loca.lt
    ```bash
    ngrok http 3000
    ```
-   You'll see a screen with:
-   ```
-   Forwarding    https://ab12-34-56-78-90.ngrok-free.app -> http://localhost:3000
-   ```
-   The `https://...ngrok-free.app` URL is what you share.
-
-**Option C — Cloudflare Tunnel (no signup, reliable):**
-1. Install cloudflared: https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/
-2. Run:
-   ```bash
-   cloudflared tunnel --url http://localhost:3000
-   ```
-3. Look for the `*.trycloudflare.com` URL in the output.
 
 ### Share the link and play
 

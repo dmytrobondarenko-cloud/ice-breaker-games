@@ -12,8 +12,8 @@ import { createTriviaState, handleTriviaAction, allAnswered, revealTrivia, nextT
 
 const PORT = Number(process.env.PORT || process.env.SNAKE_WS_PORT || 3000);
 const SNAKE_TICK_MS = 120;
-const ROWS = 20;
-const COLS = 20;
+const ROWS = 25;
+const COLS = 25;
 const MAX_PLAYERS = 6;
 const COLORS = ["#2a2a2a", "#3d5a80", "#8d5a3a", "#5a7d3a", "#7a3d80", "#3a7d7d"];
 
