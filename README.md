@@ -4,6 +4,8 @@ A collection of real-time multiplayer icebreaker games for up to 8 players. Host
 
 **Works on mobile** — players can join from phones or tablets. Snake supports swipe-to-move and on-screen arrow buttons. Sketch & Guess supports finger drawing. All other games are tap-friendly with large touch targets.
 
+**Live at:** [ice-breaker-games-production.up.railway.app](https://ice-breaker-games-production.up.railway.app/)
+
 **Included games:**
 - **Snake Arena** — Classic multiplayer snake. Eat food, grow, outlast opponents.
 - **Two Truths & a Lie** — One player writes three statements. Others guess which is the lie.
@@ -13,182 +15,146 @@ A collection of real-time multiplayer icebreaker games for up to 8 players. Host
 
 ---
 
-## TL;DR — Host a Game in 5 Minutes
+## TL;DR — Play Now (No Setup Required)
 
-> You only need to do the **First-Time Setup** once. After that, hosting is just two commands.
+The game is already hosted online. Just share the link:
 
-```bash
-# First time only:
-#   1. Install Node.js from https://nodejs.org (LTS version)
-#   2. Then run:
-git clone https://github.com/dmytrobondarenko-cloud/ice-breaker-games.git
-cd ice-breaker-games
-npm install
-
-# Every time you want to play:
-npm start                        # Terminal 1 — starts the game server
-
-# To let friends join over the internet, open a SECOND terminal:
-cloudflared tunnel --url http://localhost:3000   # Terminal 2 — gives you a public URL to share
-# (install cloudflared first: brew install cloudflared  OR  winget install Cloudflare.cloudflared)
-
-# When you're done: press Ctrl+C in Terminal 2 to stop the tunnel, then Ctrl+C in Terminal 1 to stop the server.
+```
+https://ice-breaker-games-production.up.railway.app/
 ```
 
-Send the URL to your friends. They open it in their browser — nothing to install on their end. One person clicks **Host Room**, shares the 4-character room code, everyone else clicks **Join Room**.
+- One person opens the link, clicks **Host Room**, and shares the 4-character room code
+- Everyone else opens the same link, enters the code, and clicks **Join Room**
+- Click **Start Games** when everyone's in — up to 8 players
+
+**That's it.** No installs, no tunnel, no server to run.
 
 ---
 
-## First-Time Setup (Detailed)
+## Hosting on Railway (Your Own Deployment)
 
-You only need to do this once on the computer that will run the server.
+If you want your own copy of the game hosted permanently online — with auto-deploy whenever you push code to GitHub — Railway is the recommended approach.
 
-### Step 1: Install Node.js
+### What you get
+- A permanent public URL (like `https://your-app.up.railway.app`) that always works
+- Auto-deploys every time you push to your GitHub repo — no manual redeploys
+- Free tier available (sufficient for small groups); no credit card required to start
+- Nothing to run locally — Railway runs the server 24/7
+
+### Step 1 — Create a Railway account
+
+1. Go to [railway.app](https://railway.app)
+2. Click **Login** → **Login with GitHub**
+3. Authorise Railway to access your GitHub account
+
+### Step 2 — Create a new project
+
+1. In the Railway dashboard, click **New Project**
+2. Select **Deploy from GitHub repo**
+3. Find and select `ice-breaker-games` (or your fork of it)
+4. Railway will detect the project and start deploying automatically
+
+### Step 3 — Set the start command
+
+Railway needs to know how to run the server. In your project settings:
+
+1. Click on the deployed service (the box that appears after connecting the repo)
+2. Go to **Settings** → **Deploy** → **Start Command**
+3. Enter: `node server/index.js`
+4. Click **Save** — Railway will redeploy with the correct command
+
+### Step 4 — Get your public URL
+
+1. In the Railway project, click on your service
+2. Go to **Settings** → **Networking** → **Generate Domain**
+3. Railway gives you a URL like `https://your-app-name.up.railway.app`
+4. That's your permanent link — share it with anyone to play
+
+### Step 5 — Auto-deploy is already on
+
+Every time you push code to the connected GitHub branch, Railway rebuilds and redeploys automatically. No extra steps needed.
+
+### Notes on the free tier
+
+- Railway's free tier includes 500 hours/month of runtime — enough for regular play sessions
+- The server may "sleep" after a period of inactivity on the free tier; the first person to open the URL wakes it up (takes ~5 seconds)
+- If you play frequently, consider upgrading to the Hobby plan ($5/month) for always-on uptime
+
+---
+
+## Running Locally (Development / Testing)
+
+Use this if you're making changes to the code and want to test before pushing.
+
+### First-Time Setup
+
+You only need to do this once on your local machine.
+
+**Step 1 — Install Node.js**
 
 Node.js is the engine that runs the game server.
 
 **macOS:**
-1. Go to https://nodejs.org
-2. Download the **LTS** version (the big green button)
-3. Open the downloaded `.pkg` file and follow the installer
-4. Open **Terminal** (press `Cmd + Space`, type "Terminal", hit Enter) and verify:
-   ```bash
-   node --version
-   npm --version
-   ```
-   You should see version numbers (e.g. `v20.11.0` and `10.2.0`). If you do, Node.js is installed.
-
-**Windows:**
-1. Go to https://nodejs.org
-2. Download the **LTS** version
-3. Run the `.msi` installer — accept all defaults, make sure "Add to PATH" is checked
-4. Open **PowerShell** (press `Win + X`, click "PowerShell") and verify:
+1. Go to [nodejs.org](https://nodejs.org)
+2. Download the **LTS** version and run the installer
+3. Verify in Terminal:
    ```bash
    node --version
    npm --version
    ```
 
-### Step 2: Install Git
-
-**macOS:**
-- Open Terminal and run `git --version`
-- If not installed, macOS will prompt you to install Xcode Command Line Tools — click **Install** and wait
-
 **Windows:**
-- Download from https://git-scm.com/download/win
-- Run the installer with default settings
+1. Go to [nodejs.org](https://nodejs.org)
+2. Download the **LTS** version, run the `.msi` installer with default settings
+3. Verify in PowerShell:
+   ```bash
+   node --version
+   npm --version
+   ```
 
-### Step 3: Download the Game
+**Step 2 — Install Git**
 
-Open Terminal (macOS) or PowerShell (Windows) and run:
+**macOS:** Run `git --version` — if not installed, macOS will prompt you to install Xcode Command Line Tools.
+
+**Windows:** Download from [git-scm.com/download/win](https://git-scm.com/download/win) and install with defaults.
+
+**Step 3 — Clone and install**
 
 ```bash
 git clone https://github.com/dmytrobondarenko-cloud/ice-breaker-games.git
 cd ice-breaker-games
-```
-
-### Step 4: Install Dependencies
-
-Make sure you're inside the project folder from Step 3, then run:
-
-```bash
-cd ice-breaker-games
 npm install
 ```
 
-If you already ran `cd ice-breaker-games` in Step 3, you can skip the `cd` line. This takes about 10–30 seconds. You only need to do this once.
+Run `npm install` from inside the `ice-breaker-games` folder. This takes 10–30 seconds and only needs to be done once.
 
-**You're done with setup.** Continue to one of the hosting guides below.
-
----
-
-## Hosting for Friends Over the Internet
-
-This is the most common scenario: you want to play with friends who are NOT on the same Wi-Fi. You'll run the server on your computer, then use a free tunnel to make it accessible from anywhere.
-
-### What you'll need
-
-- The computer running the server (yours)
-- Two terminal windows open on your computer
-- Your friends just need a browser (Chrome, Safari, Firefox — any device)
-
-### Step-by-step
-
-**Terminal 1 — Start the game server:**
+### Running the server locally
 
 ```bash
-cd ice-breaker-games
 npm start
 ```
 
-You'll see:
-```
-Game server running on http://localhost:3000
-Open http://localhost:3000 in your browser to play.
-```
+Open **http://localhost:3000** in your browser. Open multiple tabs to simulate multiple players.
 
-Leave this terminal running. **Do not close it** — it's your game server. To stop the server later, press **Ctrl + C** in this terminal.
+To stop the server, press **Ctrl + C** in the terminal.
 
-**Terminal 2 — Create a public link with Cloudflare Tunnel:**
+### Development mode (with hot-reload)
 
-Open a second terminal window. If you haven't installed `cloudflared` yet, do that first (one time only):
-
-macOS:
 ```bash
-brew install cloudflared
+# Terminal 1 — Game server
+npm run server
+
+# Terminal 2 — Vite dev server with hot-reload
+npm run dev
 ```
 
-Windows (PowerShell as Administrator):
-```powershell
-winget install Cloudflare.cloudflared
-```
-
-Or download the installer directly from https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/
-
-Then start the tunnel:
-```bash
-cloudflared tunnel --url http://localhost:3000
-```
-
-You'll see a public URL like:
-```
-https://some-random-words.trycloudflare.com
-```
-
-> **No Cloudflare?** If you can't install it, run `npx localtunnel --port 3000` instead — no install or signup needed. You'll get a URL like `https://ugly-fish-42.loca.lt`. Note: localtunnel may show a warning page the first time; click through it once and refresh.
-
-### Share the link and play
-
-1. **Copy the public URL** from the tunnel terminal
-2. **Send it to your friends** via text, Slack, Discord, email — whatever you use
-3. Friends open the URL in their browser. They'll see the Game Arena lobby.
-4. **You** (the host) also open the same URL in your browser
-5. Enter your name and click **Host Room**
-6. You'll see a 4-character room code like `AB12`
-7. **Tell your friends the room code** — they enter it and click **Join Room**
-8. Once everyone's in (up to 8 players), click **Start Games**
-9. Everyone votes on which game to play (30-second timer). The most-voted game starts automatically.
-10. The host clicks **End Game** when ready to move on — voting starts again for the next game.
-
-### When you're done playing
-
-1. **Stop the Cloudflare tunnel** — go to Terminal 2 and press **Ctrl + C**. The public URL immediately stops working, so no one can reach your computer any more.
-2. **Stop the game server** — go to Terminal 1 and press **Ctrl + C**. The server shuts down.
-
-That's it — nothing else to clean up. Cloudflare Tunnel creates a temporary connection each session; it doesn't install any background service and doesn't leave anything running.
-
-### Important notes
-
-- **Keep both terminals open** while playing. Closing either one stops the game.
-- **The URL changes** every time you restart the tunnel. You'll need to share a new link next session.
-- **Players don't install anything.** They just click the link and play in their browser.
-- **You should also use the tunnel URL** (not `localhost:3000`) to play, so you're on the same connection as your friends.
+Open **http://localhost:5173**. Changes to `src/` files reload instantly.
 
 ---
 
-## Hosting on the Same Wi-Fi (LAN)
+## Playing Over the Same Wi-Fi (LAN)
 
-If everyone is in the same room or on the same Wi-Fi network, you don't need a tunnel.
+If everyone is in the same room or on the same network, you can run locally and share your local IP — no internet required.
 
 ### 1. Start the server
 
@@ -197,9 +163,7 @@ cd ice-breaker-games
 npm start
 ```
 
-### 2. Find the link to share
-
-Open a **new terminal** and run:
+### 2. Find your local IP
 
 **macOS:**
 ```bash
@@ -211,51 +175,65 @@ ipconfig getifaddr en0
 ipconfig | findstr /i "IPv4"
 ```
 
-This prints your local IP — something like `192.168.1.42`.
+This prints something like `192.168.1.42`.
 
-**The link you share with friends is:**
+### 3. Share the link
+
+The link to share with friends on the same network:
 ```
 http://192.168.1.42:3000
 ```
 (swap in your actual IP)
 
-### 3. Everyone opens that link
-
-Friends open the link in their browser — no install needed. You open the same link too (don't use `localhost`, use the IP so everyone is on the same connection).
+Friends open that in their browser — no install needed. You open it too (don't use `localhost`, use the IP so everyone is on the same connection).
 
 ### 4. Host and play
 
-- You click **Host Room** and share the 4-character code
+- Click **Host Room** and share the 4-character code
 - Friends enter the code and click **Join Room**
 - Click **Start Games** when everyone's in
 
 ---
 
-## Playing Solo (Testing / Local)
+## Optional — Internet Play Without Railway (Cloudflare Tunnel)
 
-Just to try the game on your own machine:
+If Railway isn't an option (e.g. company security policy blocks it), you can still host temporarily from your local machine using a free tunnel.
+
+This requires your computer to be on while people are playing. The public URL changes every session.
+
+**Install Cloudflare Tunnel (one time):**
+
+macOS:
+```bash
+brew install cloudflared
+```
+
+Windows (PowerShell as Administrator):
+```powershell
+winget install Cloudflare.cloudflared
+```
+
+Or download directly from [developers.cloudflare.com](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/)
+
+**Run it:**
 
 ```bash
+# Terminal 1 — game server
 npm start
+
+# Terminal 2 — creates a public link
+cloudflared tunnel --url http://localhost:3000
 ```
 
-Open **http://localhost:3000** in your browser. You can open multiple tabs to simulate multiple players.
+You'll see a URL like `https://some-random-words.trycloudflare.com` — share that with friends.
 
----
+**When you're done playing:**
+1. Press **Ctrl + C** in Terminal 2 to stop the tunnel (the public URL immediately stops working)
+2. Press **Ctrl + C** in Terminal 1 to stop the game server
 
-## Development Mode
+The tunnel doesn't install any background service and doesn't leave anything running — it's fully temporary.
 
-For developers making changes to the code (with hot-reload):
-
-```bash
-# Terminal 1 — Game server
-npm run server
-
-# Terminal 2 — Vite dev server with hot-reload
-npm run dev
-```
-
-Open **http://localhost:5173**. The frontend auto-connects to the game server on port 3000. Changes to `src/` files reload instantly.
+> **No cloudflared?** As a fallback, run `npx localtunnel --port 3000` instead — no install or signup needed. You'll get a URL like `https://ugly-fish-42.loca.lt`. Note: localtunnel may show a warning page on first visit; click through it once and refresh.
 
 ---
 
@@ -267,7 +245,7 @@ Open **http://localhost:5173**. The frontend auto-connects to the game server on
 - **Desktop:** Arrow keys or WASD
 - **Mobile:** Swipe on the board in any direction, or tap the on-screen arrow buttons
 
-**How it works:** Each player controls a snake on a shared 30×30 grid. Your snake moves forward continuously — you can only change direction. Eat the red food pellets to grow longer and score points. If your snake hits a wall, another snake, or its own body, you die. Solo play is fully supported — the game only ends when your snake actually dies, not when you're the last one left.
+**How it works:** Each player controls a snake on a shared 30×30 grid. Your snake moves forward continuously — you can only change direction. Eat the red food pellets to grow longer and score points. If your snake hits a wall, another snake, or its own body, you die. Solo play is fully supported — the game only ends when your snake actually dies.
 
 **Scoring:** +1 point per food pellet eaten.
 
@@ -285,9 +263,9 @@ Open **http://localhost:5173**. The frontend auto-connects to the game server on
 - If you correctly identify the lie → **+1 point** for you
 - If you're fooled (pick a truth) → **+1 point** for the presenter
 
-**Winning a round:** The player who gained the most points in that round (either a clever presenter or a sharp guesser) wins the round.
+**Winning a round:** The player who gained the most points in that round wins.
 
-**Timers:** 60s to write statements, 30s to vote. If the presenter doesn't submit in time, the round is skipped. If voting time runs out, the reveal happens with whatever votes are in. The host can also click **Skip** to force-advance.
+**Timers:** 60s to write statements, 30s to vote. The host can click **Skip** to force-advance.
 
 ---
 
@@ -304,13 +282,13 @@ Open **http://localhost:5173**. The frontend auto-connects to the game server on
 
 **Winning a round:** The first player to guess correctly wins the round.
 
-**Timer:** The storyteller has **45 seconds** to pick and submit their emojis. If time runs out without a submission, the round is automatically skipped to the next storyteller. Once emojis are submitted, guessing is untimed — the round auto-reveals when all players have guessed correctly. The host can click **Skip** to move on early.
+**Timer:** The storyteller has **45 seconds** to pick and submit emojis. If time runs out, the round is automatically skipped. Once emojis are submitted, guessing is untimed. The host can click **Skip** to move on early.
 
 ---
 
 ### Sketch & Guess
 
-**How it works:** Players take turns as the drawer. The drawer sees a secret word and draws it on a canvas using their mouse, trackpad, or finger (touch screens fully supported). Color options (black, blue, red, yellow, green) and a clear button are available. Other players see the drawing in real time and type guesses. Guessing happens live while the drawer is still drawing.
+**How it works:** Players take turns as the drawer. The drawer sees a secret word and draws it on a canvas using their mouse, trackpad, or finger (touch screens fully supported). Colour options (black, blue, red, yellow, green) and a clear button are available. Other players see the drawing in real time and type guesses while the drawer is still drawing.
 
 **Scoring:** Same as Emoji Storytelling:
 - 1st correct guesser → **4 points**
@@ -321,24 +299,24 @@ Open **http://localhost:5173**. The frontend auto-connects to the game server on
 
 **Winning a round:** The first player to guess correctly wins the round.
 
-**Timer:** The drawer has **45 seconds**. When it runs out, the word is revealed and the next round starts. If all guessers get it right early, it reveals immediately. The host can also click **Skip**.
+**Timer:** The drawer has **45 seconds**. When it runs out, the word is revealed and the next round starts. The host can also click **Skip**.
 
 ---
 
 ### Speed Trivia
 
-**How it works:** Timed multiple-choice questions are shown to all players simultaneously. Each question has 4 options and a **15-second countdown**. Click your answer — the faster you answer correctly, the more points you earn. After each question, the correct answer is highlighted for 5 seconds. A set of 10 questions forms one round. After 10 questions, the round winner is announced and a new set begins.
+**How it works:** Timed multiple-choice questions are shown to all players simultaneously. Each question has 4 options and a **15-second countdown**. Click your answer — the faster you answer correctly, the more points you earn. After each question, the correct answer is highlighted for 5 seconds. A set of 10 questions forms one round.
 
 **Scoring:** Points per correct answer depend on speed:
 - Answer instantly → **up to 1,000 points**
 - Answer at the last second → **100 points** (minimum for a correct answer)
 - Wrong answer → **0 points**
 
-The formula: `points = ceil((time_remaining / 15) × 1000)`, minimum 100.
+Formula: `points = ceil((time_remaining / 15) × 1000)`, minimum 100.
 
-**Winning a round:** The player with the highest score gained across the 10-question set wins the round.
+**Winning a round:** The player with the highest score across 10 questions wins the round. After 10 questions, the host presses **Start Next Set** to begin a fresh set — it won't auto-start.
 
-**No host skip** — trivia is fully automated with its timers.
+**No host skip** — trivia is fully automated with its own timers.
 
 ---
 
@@ -349,10 +327,11 @@ The formula: `points = ceil((time_remaining / 15) × 1000)`, minimum 100.
 - **End Game** — ends the current game, awards a game win to the leading player, and returns to voting
 - **Next Round** (Snake only) — starts a new snake round after one ends
 - **Skip** (Truths, Emoji, Sketch) — force-advances a stuck phase
+- **Start Next Set** (Trivia only) — begins the next 10-question set after a round completes
 
 **Two-tier leaderboard:**
-- **Rounds Won** (shown during each game) — every round has a winner. This tracks how many rounds each player has won within the current game session.
-- **Games Won** (shown in lobby and voting screens) — when the host clicks **End Game**, the player with the most rounds won in that session is credited with **1 game win**. This is the overall score that persists across all games in the session.
+- **Rounds Won** (shown during each game) — tracks how many rounds each player has won within the current game session
+- **Games Won** (shown in lobby and voting screens) — when the host clicks **End Game**, the player with the most rounds won is credited with **1 game win**; this persists across all games in the session
 
 ---
 
@@ -360,16 +339,17 @@ The formula: `points = ceil((time_remaining / 15) × 1000)`, minimum 100.
 
 | Problem | Solution |
 |---------|----------|
-| `npm: command not found` | Node.js is not installed. See Step 1 in First-Time Setup. |
-| `git: command not found` | Git is not installed. See Step 2 in First-Time Setup. |
-| `npm start` shows an error | Make sure you ran `npm install` first. Make sure you're in the `ice-breaker-games` folder. |
-| Friends can't open the URL | Make sure your tunnel is still running (Terminal 2). The URL changes each session. |
-| Page loads but shows "Connection: connecting" | The game server (Terminal 1) might have stopped. Check that `npm start` is still running. |
+| `npm: command not found` | Node.js is not installed. See First-Time Setup above. |
+| `git: command not found` | Git is not installed. See First-Time Setup above. |
+| `npm start` shows an error | Make sure you ran `npm install` first and you're in the `ice-breaker-games` folder. |
+| Railway URL doesn't load | Railway may be waking up the server — wait 5–10 seconds and refresh. |
+| Friends can't open the tunnel URL | Make sure your tunnel terminal is still running. The URL changes each session. |
+| Page loads but shows "Connection: connecting" | The game server may have stopped. Check that `npm start` is still running. |
 | "Room not found" error | Double-check the 4-character room code. It's case-insensitive. |
 | "Game already in progress" | Players can only join during the lobby phase, before the host clicks Start. |
-| Friend sees the page but can't connect | They might be using `localhost` instead of the tunnel URL. Share the tunnel URL (the `https://...` one). |
-| localtunnel shows a warning page | Click through it once and refresh. This is a localtunnel quirk. |
-| `cloudflared: command not found` | Install it first: `brew install cloudflared` (macOS) or `winget install Cloudflare.cloudflared` (Windows). |
+| Friend sees the page but can't connect | They might be using `localhost` instead of the shared URL. |
+| localtunnel shows a warning page | Click through it once and refresh — this is a localtunnel quirk. |
+| `cloudflared: command not found` | Install it: `brew install cloudflared` (macOS) or `winget install Cloudflare.cloudflared` (Windows). |
 
 ---
 
@@ -413,5 +393,6 @@ ice-breaker-games/
 
 - **Frontend:** React 18, Vite 5
 - **Backend:** Node.js, native `ws` WebSocket library
+- **Hosting:** Railway (auto-deploy from GitHub)
 - **Styling:** Plain CSS
 - **No database** — all state is in-memory on the server
