@@ -225,6 +225,25 @@ button:disabled {
   display: flex;
   align-items: center;
   gap: 12px;
+  flex-wrap: wrap;
+}
+
+.credit {
+  margin-left: auto;
+  font-size: 10px;
+  opacity: 0.5;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.credit-link {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.credit-link:hover {
+  opacity: 0.8;
 }
 
 .disconnected-banner {

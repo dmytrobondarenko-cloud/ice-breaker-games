@@ -159,6 +159,18 @@ export default function App() {
             ? "WASD / Arrows to move"
             : "Game Arena — Multiplayer Party Games"}
         </div>
+        <div className="credit">
+          A personal project by{" "}
+          <a
+            href="https://github.com/androidua/ice-breaker-games"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="credit-link"
+          >
+            Dmytro B.
+          </a>
+          , built with Claude AI &amp; Cursor
+        </div>
       </footer>
     </div>
   );
