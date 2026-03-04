@@ -20,6 +20,13 @@ PORT=8080 npm start
 
 In dev mode, Vite proxies WebSocket from `:5173` to the game server at `:3000` — `App.jsx` detects port 5173 and connects to port 3000 automatically.
 
+## Git
+
+Two remotes are configured: `origin` (work GitHub) and `personal` (personal GitHub).
+
+- By default, push to `personal` only
+- Push to both only when explicitly asked to "push to both"
+
 ## Architecture
 
 **All state is in-memory on the server — no database.**
