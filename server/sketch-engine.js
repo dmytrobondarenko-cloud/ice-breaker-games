@@ -2,12 +2,36 @@ const DRAW_DURATION = 45;
 const REVEAL_DURATION = 6;
 
 const WORDS = [
-  "cat", "house", "tree", "sun", "car", "flower", "fish", "mountain",
-  "guitar", "robot", "pizza", "umbrella", "rocket", "rainbow", "dinosaur",
-  "castle", "snowman", "airplane", "bicycle", "butterfly", "telescope",
-  "volcano", "anchor", "camera", "lighthouse", "pirate", "penguin",
-  "astronaut", "dragon", "hamburger", "tornado", "waterfall", "fireworks",
-  "cactus", "submarine",
+  // Animals
+  "cat", "dog", "fish", "penguin", "dragon", "dinosaur", "butterfly",
+  "elephant", "giraffe", "octopus", "shark", "whale", "spider", "turtle",
+  "parrot", "jellyfish", "flamingo", "kangaroo", "gorilla", "snail",
+  // Food & Drink
+  "pizza", "hamburger", "ice cream", "sushi", "taco", "popcorn",
+  "birthday cake", "donut", "pancake", "watermelon", "banana", "cupcake",
+  "hot dog", "cookie", "lollipop", "coffee",
+  // Nature & Weather
+  "tree", "flower", "mountain", "volcano", "waterfall", "cactus",
+  "rainbow", "tornado", "lightning", "sunrise", "snowflake", "island",
+  "campfire", "mushroom", "palm tree", "coral reef",
+  // Transport & Machines
+  "car", "airplane", "bicycle", "submarine", "rocket", "helicopter",
+  "train", "sailboat", "skateboard", "hot air balloon", "tractor",
+  "spaceship", "motorcycle", "fire truck",
+  // Buildings & Places
+  "house", "castle", "lighthouse", "igloo", "pyramid", "skyscraper",
+  "bridge", "windmill", "tent", "treehouse", "church", "stadium",
+  // Objects
+  "guitar", "robot", "umbrella", "camera", "telescope", "anchor",
+  "treasure chest", "key", "clock", "crown", "sword", "diamond",
+  "microphone", "backpack", "laptop", "candle", "ladder", "magnifying glass",
+  "drum", "trophy",
+  // People & Characters
+  "astronaut", "pirate", "wizard", "ninja", "mermaid", "clown",
+  "cowboy", "superhero", "ghost", "scarecrow", "angel",
+  // Activities & Scenes
+  "fireworks", "snowman", "fishing", "surfing", "roller coaster",
+  "parachute", "bowling", "diving", "trampoline", "wrestling",
 ];
 
 export function createSketchState({ players, rng }) {
@@ -36,6 +60,7 @@ export function createSketchState({ players, rng }) {
     round: 1,
     timer: DRAW_DURATION,
     wordPool: shuffledWords,
+    poolIndex: 1,
     roundWinnerId: null,
   };
 }
@@ -120,7 +145,13 @@ export function nextSketchRound(state, rng) {
     [nextDrawer, ...queue] = shuffled;
   }
 
-  const word = state.wordPool[state.round % state.wordPool.length];
+  let wordPool = state.wordPool;
+  let poolIndex = state.poolIndex ?? 1;
+  if (poolIndex >= wordPool.length) {
+    wordPool = [...WORDS].sort(() => rng() - 0.5);
+    poolIndex = 0;
+  }
+  const word = wordPool[poolIndex];
 
   return {
     ...state,
@@ -128,6 +159,8 @@ export function nextSketchRound(state, rng) {
     drawerId: nextDrawer,
     turnQueue: queue,
     word,
+    wordPool,
+    poolIndex: poolIndex + 1,
     strokes: [],
     guesses: [],
     correctGuessers: [],

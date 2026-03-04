@@ -157,6 +157,116 @@ const QUESTION_BANK = [
   { q: "What is 15% of 200?", o: ["20", "25", "30", "35"], c: 2 },
   { q: "How many faces does a cube have?", o: ["4", "5", "6", "8"], c: 2 },
   { q: "What is the square root of 144?", o: ["10", "11", "12", "13"], c: 2 },
+
+  // ── Additional questions (v1.3.9) ──────────────────────────────
+
+  // Geography 2
+  { q: "What is the capital of South Korea?", o: ["Busan", "Incheon", "Seoul", "Daegu"], c: 2 },
+  { q: "Which river runs through London?", o: ["Seine", "Rhine", "Danube", "Thames"], c: 3 },
+  { q: "What is the largest country by area?", o: ["Canada", "China", "USA", "Russia"], c: 3 },
+  { q: "Which US state is the largest by area?", o: ["Texas", "Montana", "Alaska", "California"], c: 2 },
+  { q: "What is the deepest ocean trench?", o: ["Tonga Trench", "Mariana Trench", "Java Trench", "Puerto Rico Trench"], c: 1 },
+  { q: "Which European country is shaped like a boot?", o: ["Spain", "Greece", "Italy", "Portugal"], c: 2 },
+  { q: "What is the capital of Egypt?", o: ["Alexandria", "Cairo", "Luxor", "Giza"], c: 1 },
+  { q: "Which country has the most time zones?", o: ["Russia", "USA", "France", "China"], c: 2 },
+  { q: "What strait separates Europe from Africa?", o: ["Bosporus", "Gibraltar", "Hormuz", "Malacca"], c: 1 },
+  { q: "Which country is known as the Land of the Rising Sun?", o: ["China", "Thailand", "Japan", "South Korea"], c: 2 },
+
+  // Science & Nature 2
+  { q: "What is the largest organ in the human body?", o: ["Liver", "Brain", "Skin", "Lungs"], c: 2 },
+  { q: "How many bones does a shark have?", o: ["0", "50", "100", "206"], c: 0 },
+  { q: "What vitamin does the sun help your body produce?", o: ["Vitamin A", "Vitamin C", "Vitamin D", "Vitamin K"], c: 2 },
+  { q: "What is the hardest rock?", o: ["Granite", "Basalt", "Diamond", "Quartzite"], c: 2 },
+  { q: "How many teeth does an adult human typically have?", o: ["28", "30", "32", "34"], c: 2 },
+  { q: "What gas makes soda fizzy?", o: ["Oxygen", "Nitrogen", "Carbon Dioxide", "Helium"], c: 2 },
+  { q: "What is the study of earthquakes called?", o: ["Geology", "Seismology", "Meteorology", "Volcanology"], c: 1 },
+  { q: "Which planet rotates on its side?", o: ["Neptune", "Saturn", "Uranus", "Pluto"], c: 2 },
+  { q: "What part of the brain controls balance?", o: ["Frontal Lobe", "Cerebellum", "Hippocampus", "Brain Stem"], c: 1 },
+  { q: "What is the most common element in the universe?", o: ["Helium", "Oxygen", "Carbon", "Hydrogen"], c: 3 },
+
+  // History 2
+  { q: "Who was the first woman to fly solo across the Atlantic?", o: ["Bessie Coleman", "Amelia Earhart", "Harriet Quimby", "Amy Johnson"], c: 1 },
+  { q: "What was the last country to abolish slavery?", o: ["USA", "Brazil", "Mauritania", "Saudi Arabia"], c: 2 },
+  { q: "Which war was fought between the North and South in the US?", o: ["Revolution", "Civil War", "War of 1812", "Mexican-American War"], c: 1 },
+  { q: "Who built the Great Wall of China?", o: ["Han Dynasty", "Song Dynasty", "Qin Dynasty", "Ming Dynasty"], c: 2 },
+  { q: "What year did humans first land on the Moon?", o: ["1965", "1967", "1969", "1971"], c: 2 },
+  { q: "Which civilization built the Colosseum?", o: ["Greek", "Egyptian", "Roman", "Persian"], c: 2 },
+  { q: "What did Alexander Graham Bell invent?", o: ["Light Bulb", "Telegraph", "Telephone", "Radio"], c: 2 },
+  { q: "Which country gifted the Statue of Liberty to the US?", o: ["UK", "Spain", "France", "Netherlands"], c: 2 },
+  { q: "What year did the Cold War end?", o: ["1985", "1989", "1991", "1993"], c: 2 },
+  { q: "Who was known as the 'Maid of Orléans'?", o: ["Marie Curie", "Joan of Arc", "Catherine de Medici", "Cleopatra"], c: 1 },
+
+  // Pop Culture 2
+  { q: "What is the name of the galaxy in Star Wars?", o: ["Milky Way", "Andromeda", "A galaxy far far away", "Pegasus"], c: 2 },
+  { q: "Which superhero is also known as the 'Dark Knight'?", o: ["Superman", "Spider-Man", "Batman", "Iron Man"], c: 2 },
+  { q: "What animated film features a clownfish named Nemo?", o: ["Shark Tale", "Finding Nemo", "The Little Mermaid", "Moana"], c: 1 },
+  { q: "Who directed 'Jurassic Park'?", o: ["James Cameron", "George Lucas", "Steven Spielberg", "Ridley Scott"], c: 2 },
+  { q: "What band was Freddie Mercury the lead singer of?", o: ["Kiss", "Aerosmith", "Queen", "The Who"], c: 2 },
+  { q: "In 'The Lord of the Rings', what is Gandalf?", o: ["An Elf", "A Hobbit", "A Wizard", "A Dwarf"], c: 2 },
+  { q: "What social media platform uses a bird as its logo?", o: ["Facebook", "Twitter/X", "Instagram", "TikTok"], c: 1 },
+  { q: "Who played Jack in the movie 'Titanic'?", o: ["Brad Pitt", "Leonardo DiCaprio", "Tom Cruise", "Matt Damon"], c: 1 },
+  { q: "What is the name of Shrek's wife?", o: ["Rapunzel", "Fiona", "Cinderella", "Elsa"], c: 1 },
+  { q: "Which Disney movie features the song 'Let It Go'?", o: ["Tangled", "Moana", "Frozen", "Brave"], c: 2 },
+
+  // Sports 2
+  { q: "What sport does Tiger Woods play?", o: ["Tennis", "Baseball", "Golf", "Cricket"], c: 2 },
+  { q: "How many points is a touchdown worth in American football?", o: ["3", "5", "6", "7"], c: 2 },
+  { q: "Which country hosted the 2022 FIFA World Cup?", o: ["Russia", "Qatar", "UAE", "Saudi Arabia"], c: 1 },
+  { q: "What is the national sport of Canada?", o: ["Ice Hockey", "Lacrosse", "Curling", "Both Hockey & Lacrosse"], c: 3 },
+  { q: "How many holes are in a standard round of golf?", o: ["9", "12", "18", "21"], c: 2 },
+  { q: "Which boxer was known as 'The Greatest'?", o: ["Mike Tyson", "Muhammad Ali", "Floyd Mayweather", "Manny Pacquiao"], c: 1 },
+  { q: "In which sport is a shuttlecock used?", o: ["Tennis", "Badminton", "Squash", "Table Tennis"], c: 1 },
+  { q: "How long is a marathon in miles (approx)?", o: ["20 miles", "24 miles", "26.2 miles", "30 miles"], c: 2 },
+  { q: "Which country dominates table tennis at the Olympics?", o: ["Japan", "South Korea", "China", "Sweden"], c: 2 },
+  { q: "What is the term for three strikes in a row in bowling?", o: ["Hat Trick", "Triple", "Turkey", "Trifecta"], c: 2 },
+
+  // Food & Drink 2
+  { q: "What is the main spirit in a Mojito?", o: ["Vodka", "Tequila", "Rum", "Gin"], c: 2 },
+  { q: "Which country is the origin of croissants?", o: ["France", "Austria", "Italy", "Belgium"], c: 1 },
+  { q: "What is tofu made from?", o: ["Rice", "Wheat", "Soybeans", "Potatoes"], c: 2 },
+  { q: "Which fruit has its seeds on the outside?", o: ["Raspberry", "Strawberry", "Blueberry", "Blackberry"], c: 1 },
+  { q: "What is the most consumed beverage in the world after water?", o: ["Coffee", "Tea", "Beer", "Milk"], c: 1 },
+  { q: "What country is Gouda cheese from?", o: ["Switzerland", "France", "Netherlands", "Germany"], c: 2 },
+  { q: "What gives chili peppers their heat?", o: ["Citric Acid", "Capsaicin", "Piperine", "Menthol"], c: 1 },
+  { q: "Which grain is sake made from?", o: ["Wheat", "Barley", "Rice", "Corn"], c: 2 },
+  { q: "What is the most eaten food in the world?", o: ["Bread", "Rice", "Pasta", "Potatoes"], c: 1 },
+  { q: "What nut is used to make pesto?", o: ["Walnut", "Cashew", "Pine Nut", "Almond"], c: 2 },
+
+  // Technology 2
+  { q: "What does 'HTML' stand for?", o: ["High Tech Machine Language", "HyperText Markup Language", "Home Tool Markup Language", "HyperTransfer Meta Language"], c: 1 },
+  { q: "Who is the CEO of Tesla?", o: ["Jeff Bezos", "Tim Cook", "Elon Musk", "Satya Nadella"], c: 2 },
+  { q: "What year was the first email sent?", o: ["1965", "1971", "1978", "1983"], c: 1 },
+  { q: "What does 'GPS' stand for?", o: ["Global Positioning System", "General Purpose Satellite", "Geographic Point System", "Global Path Sensor"], c: 0 },
+  { q: "Which company created the iPhone?", o: ["Samsung", "Google", "Apple", "Microsoft"], c: 2 },
+  { q: "What is the most popular programming language in 2025?", o: ["Java", "Python", "JavaScript", "C++"], c: 1 },
+  { q: "What does 'Wi-Fi' stand for?", o: ["Wireless Fidelity", "Nothing — it's a brand name", "Wide Frequency", "Wireless Finder"], c: 1 },
+  { q: "Who founded Amazon?", o: ["Elon Musk", "Mark Zuckerberg", "Jeff Bezos", "Larry Page"], c: 2 },
+  { q: "What was the first widely used web browser?", o: ["Internet Explorer", "Firefox", "Netscape Navigator", "Safari"], c: 2 },
+  { q: "How many megabytes are in a gigabyte?", o: ["100", "512", "1000", "1024"], c: 3 },
+
+  // Animals 2
+  { q: "What is the tallest animal in the world?", o: ["Elephant", "Giraffe", "Moose", "Ostrich"], c: 1 },
+  { q: "Which insect can carry 50 times its body weight?", o: ["Bee", "Ant", "Beetle", "Grasshopper"], c: 1 },
+  { q: "What is a group of crows called?", o: ["Flock", "Murder", "Pack", "Colony"], c: 1 },
+  { q: "Which sea creature has three hearts?", o: ["Starfish", "Jellyfish", "Octopus", "Seahorse"], c: 2 },
+  { q: "What animal has the longest migration?", o: ["Monarch Butterfly", "Arctic Tern", "Humpback Whale", "Wildebeest"], c: 1 },
+  { q: "How many humps does a Bactrian camel have?", o: ["0", "1", "2", "3"], c: 2 },
+  { q: "What is the only continent with no native cats?", o: ["Australia", "Antarctica", "Both A and B", "South America"], c: 2 },
+  { q: "Which animal sleeps standing up?", o: ["Cow", "Horse", "Deer", "Elephant"], c: 1 },
+  { q: "What animal is known to laugh?", o: ["Chimpanzee", "Hyena", "Dolphin", "All of these"], c: 3 },
+  { q: "What is a baby goat called?", o: ["Lamb", "Calf", "Kid", "Foal"], c: 2 },
+
+  // Miscellaneous
+  { q: "What colour are aircraft black boxes?", o: ["Black", "Orange", "Red", "Yellow"], c: 1 },
+  { q: "How many strings does a standard guitar have?", o: ["4", "5", "6", "8"], c: 2 },
+  { q: "What is the most spoken language in South America?", o: ["Spanish", "Portuguese", "English", "French"], c: 1 },
+  { q: "What does DNA stand for?", o: ["Deoxyribonucleic Acid", "Dinitrogen Acid", "Dynamic Nuclear Assembly", "Double Nucleus Atom"], c: 0 },
+  { q: "How many colours are in a rainbow?", o: ["5", "6", "7", "8"], c: 2 },
+  { q: "What is the most common surname in the world?", o: ["Smith", "Wang", "Singh", "Kim"], c: 1 },
+  { q: "What does 'SOS' stand for?", o: ["Save Our Souls", "Stop Our Ship", "Send Out Signals", "Nothing — it's just easy in Morse code"], c: 3 },
+  { q: "What is the rarest blood type?", o: ["O-", "A-", "B-", "AB-"], c: 3 },
+  { q: "How many keys does a standard piano have?", o: ["76", "82", "88", "92"], c: 2 },
+  { q: "What is the pH of pure water?", o: ["5", "6", "7", "8"], c: 2 },
 ];
 
 export function createTriviaState({ players, rng }) {
