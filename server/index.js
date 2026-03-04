@@ -11,7 +11,7 @@ import { createSketchState, handleSketchAction, allSketchGuessersCorrect, tickSk
 import { createTriviaState, handleTriviaAction, allAnswered, revealTrivia, nextTriviaQuestion, nextTriviaRound, tickTrivia, serializeTrivia } from "./trivia-engine.js";
 
 const PORT = Number(process.env.PORT || process.env.SNAKE_WS_PORT || 3000);
-const SNAKE_TICK_MS = 100;
+const SNAKE_TICK_MS = 120;
 const ROWS = 30;
 const COLS = 30;
 const MAX_PLAYERS = 8;
@@ -81,7 +81,7 @@ setInterval(() => {
     ws.isAlive = false;
     ws.ping();
   });
-}, 25000);
+}, 15000);
 
 wss.on("connection", (ws) => {
   ws.isAlive = true;

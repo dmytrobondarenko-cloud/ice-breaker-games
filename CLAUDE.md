@@ -42,8 +42,8 @@ Two remotes are configured: `origin` (work GitHub) and `personal` (personal GitH
 - `index.js` — HTTP static file server + WebSocket server. Contains all room lifecycle, message routing, game dispatch, and timer management. The `rooms` Map is the single source of truth.
 - Each game engine (`engine.js`, `truths-engine.js`, `emoji-engine.js`, `sketch-engine.js`, `trivia-engine.js`, `voting-engine.js`) is a **pure module** — functions take state + inputs and return new state. No side effects.
 - `index.js` drives all timers (`setInterval`) and calls engine functions to advance state.
-- Snake ticks every 100ms; all other timers tick every 1000ms.
-- A 25s WebSocket ping/pong keeps connections alive through proxies.
+- Snake ticks every 120ms; all other timers tick every 1000ms.
+- A 15s WebSocket ping/pong keeps connections alive through proxies.
 
 ### Frontend (`src/`)
 - `App.jsx` — owns the WebSocket connection, all top-level state (`room`, `game`, `voting`, `me`), and keyboard input for Snake. Routes rendering to the correct game component based on `room.currentGame`.
